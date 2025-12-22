@@ -236,7 +236,7 @@
     <transition name="modal">
         <div v-if="showModal" class="fixed inset-0 z-[100] flex items-end md:items-center justify-center p-0 md:p-6">
             <div class="absolute inset-0 bg-black/60 backdrop-blur-md" @click="showModal = false"></div>
-            <div class="bg-white w-full max-w-lg rounded-t-[40px] md:rounded-[40px] shadow-2xl z-10 overflow-hidden border-t-8 border-xmas-red flex flex-col max-h-[90vh]">
+            <div class="bg-white w-full max-w-lg rounded-t-[40px] md:rounded-[40px] shadow-2xl z-10 overflow-hidden border-t-8 border-xmas-red flex flex-col max-h-[80vh] mb-[80px] md:mb-0">
                 
                 <div class="p-8 overflow-y-auto space-y-6 hide-scrollbar">
                     <div class="flex justify-between items-center border-b border-gray-100 pb-4">
@@ -298,7 +298,6 @@
             </div>
         </div>
     </transition>
-
     <nav class="fixed bottom-0 left-0 w-full bg-white/90 backdrop-blur-md border-t border-gray-100 flex justify-around p-3 pb-8 z-[100]">
         <button v-for="t in tabs" @click="currentTab = t.id" 
             :class="currentTab === t.id ? 'text-xmas-red scale-110' : 'text-[var(--xmas-green)]'"
