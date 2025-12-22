@@ -14,34 +14,31 @@
     <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Pacifico&family=Abril+Fatface&family=Cinzel+Decorative:wght@700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Pacifico&family=Abril+Fatface&family=Cinzel+Decorative:wght@700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Righteous&family=Tenor+Sans&family=Permanent+Marker&family=Orbitron:wght@900&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;1,600&family=Josefin+Sans:wght@600&family=Libre+Baskerville:ital@1&display=swap" rel="stylesheet">
-   <style>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,700&display=swap" rel="stylesheet">   <style>
         :root { --xmas-red: #A61B1B; --xmas-green: #044A05; --hk-gold: #D4AF37; --bg-cream: #FDFCF0; }
         body { background-color: var(--bg-cream); font-family: 'Noto Sans TC', sans-serif; color: #1F2937; overflow-x: hidden; height: 100vh; }
         .header-bg { background-image: linear-gradient(to bottom, rgba(166, 27, 27,0.4), rgba(166, 27, 27, 0.7)), url('./images/bg.jpeg'); background-size: cover; background-position: center; border-bottom: 3px solid var(--hk-gold); }
         .brand-text {
     font-family: 'Cormorant Garamond', serif;
-    /* 調大尺寸並加粗 */
-    font-size: 3.5rem; 
-    font-weight: 700;
-    font-style: italic;
-    letter-spacing: 2px;
+    font-size: 10rem;      /* 字體再加大 */
+    font-weight: 900;       /* 強制推到最粗 */
+    font-style: italic;     /* 復古斜體 */
+    letter-spacing: 1px;    /* 縮小字距讓視覺更濃厚 */
     
-    /* 核心：霓虹感多層陰影 */
-    /* 1. 白色核心 2. 金色強光 3. 聖誕紅環境光暈 4. 深色背景層次 */
-    color: #FFF; /* 霓虹燈管中心通常是白色的，靠陰影發光 */
+    /* 霓虹核心：白色本體配合強烈金紅光暈 */
+    color: #FFFFFF; 
     text-shadow: 
-        0 0 5px #FFF,
-        0 0 10px var(--hk-gold),
-        0 0 20px var(--hk-gold),
-        0 0 40px var(--xmas-red),
-        2px 2px 5px rgba(0,0,0,0.5);
-    
-    /* 讓文字有一點點傾斜的動態感 */
-    transform: rotate(-1deg);
-    display: inline-block;
-}
+        0 0 7px #fff,                /* 內發光 */
+        0 0 15px var(--hk-gold),     /* 主霓虹色 */
+        0 0 30px var(--hk-gold),     /* 中層擴散 */
+        0 0 50px var(--xmas-red),    /* 外層聖誕紅氛圍 */
+        3px 4px 8px rgba(0,0,0,0.6); /* 底部深色立體陰影 */
 
+    /* 輕微旋轉更有老招牌的感覺 */
+    transform: rotate(-2deg);
+    display: inline-block;
+    line-height: 1.1;
+}
         .xmas-red { background-color: var(--xmas-red); }
         .xmas-green { background-color: var(--xmas-green); }
         .text-xmas-red { color: var(--xmas-red); }
