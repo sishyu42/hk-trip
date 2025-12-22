@@ -6,20 +6,15 @@
     <title>香港聖誕 | 2025 旗艦版</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-    
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&family=Playfair+Display:ital,wght@0,900;1,900&display=swap" rel="stylesheet">
     
     <style>
         :root { --xmas-red: #A61B1B; --xmas-green: #044A05; --hk-gold: #D4AF37; --bg-cream: #FDFCF0; }
         body { background-color: var(--bg-cream); font-family: 'Noto Sans TC', sans-serif; color: #1F2937; overflow-x: hidden; height: 100vh; }
-        .header-bg {
-            background-image: linear-gradient(to bottom, rgba(166, 27, 27,0.4), rgba(166, 27, 27, 0.7)), url('./images/bg.jpeg'); 
-            background-size: cover; background-position: center; border-bottom: 3px solid var(--hk-gold);
-        }
+        .header-bg { background-image: linear-gradient(to bottom, rgba(166, 27, 27,0.4), rgba(166, 27, 27, 0.7)), url('./images/bg.jpeg'); background-size: cover; background-position: center; border-bottom: 3px solid var(--hk-gold); }
         .brand-text { font-family: 'Playfair Display', serif; font-weight: 900; font-style: italic; letter-spacing: 1px; text-shadow: 0 2px 10px rgba(0,0,0,0.3); }
         .xmas-red { background-color: var(--xmas-red); }
         .xmas-green { background-color: var(--xmas-green); }
@@ -30,6 +25,8 @@
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .ticket-stub { background: #FFF9E6; border: 3px solid var(--hk-gold); border-style: dashed; border-radius: 12px; }
         .timeline-path { position: absolute; left: 58px; top: 0; bottom: 0; width: 2px; background: repeating-linear-gradient(to bottom, #D4AF37 0, #D4AF37 5px, transparent 5px, transparent 10px); z-index: 1; }
+        .modal-enter-active, .modal-leave-active { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        .modal-enter-from, .modal-leave-to { opacity: 0; transform: translateY(20px); }
     </style>
 </head>
 <body class="flex flex-col">
@@ -38,43 +35,27 @@
     
     <div class="absolute top-2 right-2 z-[100] flex items-center space-x-1 bg-black/20 px-2 py-0.5 rounded-full">
         <div class="w-1.5 h-1.5 rounded-full" :class="syncStatus ? 'bg-green-400' : 'bg-red-400 animate-pulse'"></div>
-        <span class="text-[8px] text-white font-black uppercase">{{ syncStatus ? 'Synced' : 'Offline' }}</span>
+        <span class="text-[8px] text-white font-black uppercase tracking-widest">{{ syncStatus ? 'Synced' : 'Offline' }}</span>
     </div>
 
     <div v-for="n in 12" :key="n" class="snowflake" :style="{left: Math.random()*100+'%', animationDuration: (Math.random()*10+5)+'s', animationDelay: Math.random()*5+'s', top: '-20px'}">❄</div>
 
     <header class="header-bg text-white px-6 pt-12 pb-5 z-30 shadow-lg relative">
-        <div class="flex justify-between items-center">
-            <div>
-                <h1 class="brand-text text-3xl">Merry HK</h1>
-                <div class="flex items-center space-x-2 opacity-80 mt-1">
-                    <span class="w-6 h-[1px] bg-hk-gold"></span>
-                    <p class="text-[9px] font-black uppercase tracking-widest">January , 2026</p>
-                </div>
-            </div>
-            <div class="text-right bg-black/30 p-2 rounded-lg backdrop-blur-sm border border-white/10">
-                <p class="text-[8px] font-black uppercase opacity-70 text-hk-gold">{{ countdownLabel }}</p>
-                <p class="text-xs font-mono font-bold">{{ countdownText }}</p>
-            </div>
+        <h1 class="brand-text text-3xl">Merry HK</h1>
+        <div class="flex items-center space-x-2 opacity-80 mt-1">
+            <span class="w-6 h-[1px] bg-hk-gold"></span>
+            <p class="text-[9px] font-black uppercase tracking-widest">January , 2026</p>
         </div>
     </header>
 
-    <nav class="flex xmas-green text-white/50 z-20 shadow-md">
-        <button v-for="t in tabs" :key="t.id" @click="currentTab = t.id"
-            :class="currentTab === t.id ? 'text-white bg-white/10' : ''"
-            class="flex-1 py-4 font-black text-[11px] uppercase transition-all">
-            <i :class="t.icon" class="mb-1 block text-sm"></i>{{ t.name }}
-        </button>
-    </nav>
-
-    <main class="flex-1 overflow-y-auto hide-scrollbar p-4 relative z-10">
+    <main class="flex-1 overflow-y-auto hide-scrollbar p-4 relative z-10 pb-24">
         
         <div v-if="currentTab === 'itinerary'">
             <div class="flex mb-5 items-center justify-between">
                 <div class="flex space-x-1">
                     <button v-for="d in days" @click="currentDay = d.id" 
                         :class="currentDay === d.id ? 'xmas-red text-white shadow-md' : 'bg-white text-gray-400 border'"
-                        class="py-2 px-3 rounded-lg text-[10px] font-black">DAY {{ d.id }}</button>
+                        class="py-2 px-3 rounded-lg text-[10px] font-black transition-all">DAY {{ d.id }}</button>
                 </div>
                 <div class="flex items-center space-x-2 bg-white px-3 py-1.5 rounded-full border border-hk-gold/30 shadow-sm">
                     <i :class="days[currentDay-1].icon" class="text-hk-gold text-sm"></i>
@@ -102,20 +83,48 @@
 
             <div class="relative pl-16">
                 <div v-if="currentDayItems.length > 0" class="timeline-path"></div>
-                <div v-for="(item, index) in currentDayItems" :key="item.id" class="mb-10 relative">
-                    <div class="absolute -left-16 top-1 w-12 text-right text-[11px] font-black text-xmas-green">{{ item.time }}</div>
-                    <div class="absolute -left-[11px] top-1.5 w-3 h-3 rounded-full bg-xmas-red z-10 border-2 border-white"></div>
-                    
-                    <div class="bg-white rounded-xl overflow-hidden shadow-md border-b-4 border-xmas-green p-3">
-                        <img v-if="item.image" :src="item.image" class="w-full h-32 object-cover rounded-lg mb-2">
-                        <div class="flex justify-between items-start">
-                            <div class="flex-1">
-                                <h3 class="font-black text-sm text-xmas-green">{{ item.location }}</h3>
-                                <p v-if="item.note" class="text-[10px] text-gray-400 mt-1 italic border-l-2 border-hk-gold pl-2">{{ item.note }}</p>
-                            </div>
-                            <div class="flex space-x-1 ml-2">
-                                <a v-if="item.mapUrl" :href="getMapLink(item.mapUrl)" target="_blank" class="bg-blue-50 text-blue-500 p-2 rounded-lg"><i class="fas fa-map-marked-alt text-xs"></i></a>
-                                <button @click="deleteItem(index)" class="bg-red-50 text-red-500 p-2 rounded-lg"><i class="fas fa-trash text-[10px]"></i></button>
+                <div v-for="(item, index) in currentDayItems" :key="index">
+                    <div v-if="index > 0" class="relative -left-10 mb-6 flex items-center z-20">
+                        <div class="bg-white/80 backdrop-blur-sm border border-hk-gold/40 px-3 py-1 rounded-full shadow-sm flex items-center space-x-2">
+                            <i class="fas fa-route text-hk-gold text-[10px]"></i>
+                            <input v-model="item.gapInfo" @change="saveData" placeholder="輸入交通/步行時間" 
+                                   class="bg-transparent border-none outline-none text-[10px] font-bold text-hk-gold w-32 placeholder:text-hk-gold/30">
+                        </div>
+                    </div>
+
+                    <div class="mb-10 relative">
+                        <div class="absolute -left-16 top-1 w-12 text-right text-[11px] font-black text-xmas-green">{{ item.time }}</div>
+                        <div class="absolute -left-[11px] top-1.5 w-3 h-3 rounded-full bg-xmas-red z-10 border-2 border-white"></div>
+                        
+                        <div class="bg-white rounded-xl overflow-hidden shadow-md border-b-4 border-xmas-green p-3">
+                            <img v-if="item.image" :src="item.image" class="w-full h-40 object-cover rounded-lg mb-3">
+                            
+                            <div class="flex flex-col">
+                                <div class="flex justify-between items-start mb-2">
+                                    <div class="flex-1">
+                                        <span v-if="item.tag" class="text-[8px] bg-hk-gold/10 text-hk-gold px-2 py-0.5 rounded-full font-black uppercase mb-1 inline-block">{{ item.tag }}</span>
+                                        <h3 class="font-black text-sm text-xmas-green leading-tight">{{ item.location }}</h3>
+                                    </div>
+                                </div>
+                                
+                                <p v-if="item.note" class="text-[10px] text-gray-400 mb-4 italic border-l-2 border-hk-gold pl-2">{{ item.note }}</p>
+
+                                <div class="flex justify-between items-center mt-1 pt-2 border-t border-gray-50">
+                                    <div class="flex space-x-1">
+                                        <a v-if="item.mapUrl" :href="item.mapUrl" target="_blank" class="bg-blue-50 text-blue-500 p-2 rounded-lg flex items-center justify-center">
+                                            <i class="fas fa-map-marked-alt text-xs"></i>
+                                        </a>
+                                        <button @click="moveItem(index, -1)" class="bg-gray-50 text-gray-400 p-2 rounded-lg flex items-center justify-center">
+                                            <i class="fas fa-chevron-up text-[10px]"></i>
+                                        </button>
+                                        <button @click="moveItem(index, 1)" class="bg-gray-50 text-gray-400 p-2 rounded-lg flex items-center justify-center">
+                                            <i class="fas fa-chevron-down text-[10px]"></i>
+                                        </button>
+                                    </div>
+                                    <button @click="deleteItem(index)" class="bg-red-50 text-red-500 p-2 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-trash text-[10px]"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -123,59 +132,74 @@
             </div>
         </div>
 
-        <div v-if="currentTab === 'list'" class="space-y-6 pb-20">
-            <section class="bg-white p-5 rounded-2xl shadow-sm border-l-8 border-xmas-green">
-                <h3 class="font-black text-sm text-xmas-green mb-4 italic uppercase">🧳 Packing List</h3>
-                <div class="flex mb-3">
-                    <input v-model="newItemName" @keyup.enter="addItem('packing')" placeholder="帶什麼？" class="flex-1 bg-gray-50 px-3 py-3 rounded-l-xl text-xs font-bold outline-none border border-gray-100">
-                    <button @click="addItem('packing')" class="xmas-green text-white px-5 rounded-r-xl text-xs font-black">ADD</button>
+        <div v-if="currentTab === 'list'" class="space-y-6">
+            <div class="bg-white rounded-3xl shadow-xl overflow-hidden border-t-4 border-xmas-red">
+                <div class="xmas-red p-4 flex justify-between items-center text-white">
+                    <h2 class="font-black italic tracking-widest text-sm uppercase"><i class="fas fa-suitcase-rolling mr-2"></i>Packing List</h2>
+                    <span class="text-[10px] bg-white/20 px-2 py-1 rounded-full">{{ packingList.filter(i=>i.done).length }}/{{ packingList.length }}</span>
                 </div>
-                <div v-for="(item, i) in packingList" :key="i" class="flex items-center justify-between mb-2">
-                    <div class="flex items-center" @click="item.done = !item.done; saveData()">
-                        <i :class="item.done ? 'fas fa-check-square text-xmas-green' : 'far fa-square text-gray-300'" class="text-lg"></i>
-                        <span class="ml-3 text-xs font-bold" :class="item.done ? 'line-through text-gray-300' : 'text-xmas-green'">{{ item.text }}</span>
+                <div class="p-4 space-y-2">
+                    <div v-for="(item, idx) in packingList" :key="idx" @click="item.done = !item.done; saveData()"
+                         class="flex items-center justify-between p-3 rounded-xl border transition-all cursor-pointer"
+                         :class="item.done ? 'bg-gray-50 opacity-50' : 'bg-white border-hk-gold/10'">
+                        <div class="flex items-center space-x-3">
+                            <i :class="item.done ? 'fa-check-circle text-green-500' : 'fa-circle text-gray-200'" class="far"></i>
+                            <span class="text-xs font-bold" :class="item.done ? 'line-through text-gray-400' : ''">{{ item.text }}</span>
+                        </div>
+                        <button @click.stop="deleteListItem('packing', idx)" class="text-gray-200 hover:text-red-400"><i class="fas fa-trash-alt"></i></button>
                     </div>
-                    <button @click="deleteListItem('packing', i)" class="text-gray-200 px-2"><i class="fas fa-times"></i></button>
-                </div>
-            </section>
-            
-            <section class="bg-white p-5 rounded-2xl shadow-sm border-l-8 border-hk-gold mt-6">
-                <h3 class="font-black text-sm text-hk-gold mb-4 italic uppercase">🛍️ Shopping List</h3>
-                <div class="flex mb-3">
-                    <input v-model="newShopItemName" @keyup.enter="addItem('shopping')" placeholder="想買什麼？" class="flex-1 bg-gray-50 px-3 py-3 rounded-l-xl text-xs font-bold outline-none border border-gray-100">
-                    <button @click="addItem('shopping')" class="bg-hk-gold text-white px-5 rounded-r-xl text-xs font-black">ADD</button>
-                </div>
-                <div v-for="(item, i) in shoppingList" :key="i" class="flex items-center justify-between mb-2">
-                    <div class="flex items-center" @click="item.done = !item.done; saveData()">
-                        <i :class="item.done ? 'fas fa-check-square text-hk-gold' : 'far fa-square text-gray-300'" class="text-lg"></i>
-                        <span class="ml-3 text-xs font-bold" :class="item.done ? 'line-through text-gray-300' : 'text-xmas-green'">{{ item.text }}</span>
-                    </div>
-                    <button @click="deleteListItem('shopping', i)" class="text-gray-200 px-2"><i class="fas fa-times"></i></button>
-                </div>
-            </section>
-        </div>
-
-        <div v-if="currentTab === 'expense'" class="flex flex-col h-full space-y-4">
-            <div class="bg-white p-4 rounded-2xl shadow-lg border-2 border-hk-gold/30 text-center relative">
-                <div class="text-[9px] font-black text-hk-gold mb-1 uppercase tracking-widest">Rate: 1 HKD ≈ {{ exchangeRate }} TWD</div>
-                <p class="text-[10px] font-black text-gray-400 mb-2 uppercase">Total Spent</p>
-                <p class="text-3xl font-black text-xmas-red mb-4">NT$ {{ Math.round(totalExpense * exchangeRate).toLocaleString() }}</p>
-                <div class="flex flex-col space-y-1.5">
-                    <input v-model="newEx.name" placeholder="項目" class="w-full bg-gray-50 border border-gray-100 px-3 py-2 rounded-lg text-xs font-bold outline-none">
-                    <div class="flex space-x-1.5">
-                        <input v-model.number="newEx.amount" type="number" placeholder="HKD 金額" class="flex-1 min-w-0 bg-gray-50 border border-gray-100 px-3 py-2 rounded-lg text-xs font-bold outline-none">
-                        <button @click="addExpense" class="w-16 xmas-red text-white py-2 rounded-lg text-xs font-black shadow-md">ADD</button>
+                    <div class="flex mt-4 bg-gray-50 rounded-xl p-1">
+                        <input v-model="newItemName" placeholder="新增行李..." class="flex-1 bg-transparent p-3 text-xs outline-none font-bold">
+                        <button @click="addItem('packing')" class="xmas-red text-white px-5 rounded-lg font-black text-xs">+</button>
                     </div>
                 </div>
             </div>
+
+            <div class="bg-white rounded-3xl shadow-xl overflow-hidden border-t-4 border-xmas-green">
+                <div class="xmas-green p-4 text-white">
+                    <h2 class="font-black italic tracking-widest text-sm uppercase"><i class="fas fa-gift mr-2"></i>Shopping List</h2>
+                </div>
+                <div class="p-4 space-y-2">
+                    <div v-for="(item, idx) in shoppingList" :key="idx" @click="item.done = !item.done; saveData()"
+                         class="flex items-center justify-between p-3 rounded-xl border border-hk-gold/10 bg-white shadow-sm"
+                         :class="item.done ? 'opacity-50' : ''">
+                        <div class="flex items-center space-x-3">
+                            <i :class="item.done ? 'fa-check-square text-hk-gold' : 'fa-square text-gray-200'" class="far"></i>
+                            <span class="text-xs font-bold">{{ item.text }}</span>
+                        </div>
+                        <button @click.stop="deleteListItem('shopping', idx)" class="text-gray-200 hover:text-red-400"><i class="fas fa-trash-alt"></i></button>
+                    </div>
+                    <div class="flex mt-4 bg-gray-50 rounded-xl p-1">
+                        <input v-model="newShopItemName" placeholder="想買什麼呢？" class="flex-1 bg-transparent p-3 text-xs outline-none font-bold">
+                        <button @click="addItem('shopping')" class="xmas-green text-white px-5 rounded-lg font-black text-xs">+</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div v-if="currentTab === 'expense'" class="flex flex-col h-full space-y-4">
+            <div class="bg-white p-6 rounded-2xl shadow-lg border-2 border-hk-gold/30 text-center relative">
+                <div class="text-[9px] font-black text-hk-gold mb-1 uppercase tracking-widest">Live Rate: 1 HKD ≈ {{ exchangeRate }} TWD</div>
+                <p class="text-[10px] font-black text-gray-400 mb-1">TOTAL EXPENSE</p>
+                <p class="text-3xl font-black text-xmas-red mb-4">NT$ {{ Math.round(totalExpense * exchangeRate).toLocaleString() }}</p>
+                
+                <div class="space-y-2">
+                    <input v-model="newEx.name" placeholder="項目名稱" class="w-full bg-gray-50 border border-gray-200 p-3 rounded-xl text-sm font-bold outline-none focus:border-xmas-red">
+                    <div class="flex space-x-2">
+                        <input v-model.number="newEx.amount" type="number" placeholder="HKD 金額" class="flex-1 bg-gray-50 border border-gray-200 p-3 rounded-xl text-sm font-bold outline-none focus:border-xmas-red">
+                        <button @click="addExpense" class="xmas-red text-white px-6 py-3 rounded-xl text-sm font-black shadow-md">ADD</button>
+                    </div>
+                </div>
+            </div>
+
             <div class="flex-1 overflow-y-auto space-y-2 pb-20 hide-scrollbar">
-                <div v-for="(ex, i) in expenseList" :key="i" class="flex justify-between items-center bg-white p-3 rounded-xl shadow-sm border border-gray-100">
+                <div v-for="(ex, i) in expenseList" :key="i" class="flex justify-between items-center bg-white p-4 rounded-xl shadow-sm border border-gray-100">
                     <div class="flex-1 truncate pr-2">
                         <p class="font-black text-sm text-xmas-green truncate">{{ ex.name }}</p>
-                        <p class="text-[9px] font-bold text-hk-gold">≈ NT$ {{ Math.round(ex.amount * exchangeRate) }}</p>
+                        <p class="text-[10px] font-bold text-hk-gold">≈ NT$ {{ Math.round(ex.amount * exchangeRate) }}</p>
                     </div>
                     <div class="flex items-center space-x-3">
-                        <span class="font-black text-xmas-red text-sm">${{ ex.amount }}</span>
+                        <span class="font-black text-xmas-red text-base">${{ ex.amount }}</span>
                         <button @click="deleteExpense(i)" class="text-gray-200"><i class="fas fa-times-circle text-lg"></i></button>
                     </div>
                 </div>
@@ -183,12 +207,88 @@
         </div>
     </main>
 
-    <nav class="bg-white border-t border-gray-100 flex justify-around p-3 pb-8 z-50">
-        <button v-for="t in tabs" @click="currentTab = t.id" :class="currentTab === t.id ? 'text-xmas-red scale-125' : 'text-gray-300'"><i :class="t.icon + ' text-xl'"></i></button>
+    <button v-if="currentTab === 'itinerary'" @click="showModal = true" class="fixed bottom-24 right-6 w-14 h-14 xmas-red text-white rounded-full shadow-2xl z-[60] flex items-center justify-center border-4 border-white transition-transform active:scale-95">
+        <i class="fas fa-plus text-xl"></i>
+    </button>
+
+    <transition name="modal">
+        <div v-if="showModal" class="fixed inset-0 z-[100] flex items-end md:items-center justify-center p-0 md:p-6">
+            <div class="absolute inset-0 bg-black/60 backdrop-blur-md" @click="showModal = false"></div>
+            <div class="bg-white w-full max-w-lg rounded-t-[40px] md:rounded-[40px] shadow-2xl z-10 overflow-hidden border-t-8 border-xmas-red flex flex-col max-h-[90vh]">
+                
+                <div class="p-8 overflow-y-auto space-y-6 hide-scrollbar">
+                    <div class="flex justify-between items-center border-b border-gray-100 pb-4">
+                        <div>
+                            <h2 class="font-black text-xmas-red italic uppercase tracking-widest text-xl leading-none">Add Spot</h2>
+                            <p class="text-[9px] text-gray-400 font-black mt-1 uppercase tracking-tighter">Create a new memory in Hong Kong</p>
+                        </div>
+                        <button @click="showModal = false" class="text-gray-300 hover:text-gray-500"><i class="fas fa-times-circle text-2xl"></i></button>
+                    </div>
+                    
+                    <div class="group relative aspect-video bg-gray-50 rounded-3xl border-2 border-dashed border-gray-200 flex items-center justify-center overflow-hidden transition-all hover:border-hk-gold">
+                        <img v-if="newItem.image" :src="newItem.image" class="w-full h-full object-cover">
+                        <div v-else class="text-center text-gray-300">
+                            <div class="w-12 h-12 bg-white rounded-full shadow-md flex items-center justify-center mx-auto mb-2 text-xmas-red group-hover:scale-110 transition-transform">
+                                <i class="fas fa-camera text-xl"></i>
+                            </div>
+                            <p class="text-[10px] font-black uppercase tracking-widest">Tap to Upload Photo</p>
+                        </div>
+                        <input type="file" @change="handleImageUpload" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer">
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-4">
+                        <div class="col-span-1">
+                            <label class="text-[10px] font-black text-hk-gold uppercase block mb-1">Time</label>
+                            <input v-model="newItem.time" type="time" class="w-full bg-gray-50 p-3 rounded-2xl border-none outline-none text-xs font-black text-xmas-green focus:ring-2 ring-hk-gold/20">
+                        </div>
+                        <div class="col-span-2">
+                            <label class="text-[10px] font-black text-hk-gold uppercase block mb-1">Location Name</label>
+                            <input v-model="newItem.location" placeholder="要去哪裡玩？" class="w-full bg-gray-50 p-3 rounded-2xl border-none outline-none text-xs font-black text-xmas-green focus:ring-2 ring-hk-gold/20">
+                        </div>
+                    </div>
+
+                    <div class="space-y-4 bg-gray-50/50 p-4 rounded-3xl">
+                        <div>
+                            <label class="text-[10px] font-black text-gray-400 uppercase block mb-1 ml-1"><i class="fas fa-map-marked-alt mr-1"></i>Google Map Link</label>
+                            <input v-model="newItem.mapUrl" placeholder="貼上地圖連結..." class="w-full bg-white p-3 rounded-2xl border-none shadow-sm outline-none text-[10px] font-bold">
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-black text-gray-400 uppercase block mb-1 ml-1"><i class="fas fa-tags mr-1"></i>Category</label>
+                            <div class="flex flex-wrap gap-2">
+                                <button v-for="tag in ['📸 景點', '🍽️ 美食', '🛍️ 購物', '🚌 交通']" 
+                                    @click="newItem.tag = tag"
+                                    :class="newItem.tag === tag ? 'xmas-green text-white shadow-lg' : 'bg-white text-gray-400 border'"
+                                    class="px-4 py-2 rounded-full text-[10px] font-black transition-all">{{ tag }}</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="text-[10px] font-black text-gray-400 uppercase block mb-1 ml-1">Memo / Remark</label>
+                        <textarea v-model="newItem.note" rows="3" placeholder="有什麼要注意的？例如預約時間、推薦菜色..." class="w-full bg-gray-50 p-4 rounded-2xl border-none outline-none text-xs font-bold focus:ring-2 ring-hk-gold/20"></textarea>
+                    </div>
+                </div>
+
+                <div class="p-6 bg-gray-50 flex space-x-4 border-t border-gray-100">
+                    <button @click="showModal = false" class="flex-1 py-4 font-black text-gray-400 text-[10px] uppercase tracking-widest">Discard</button>
+                    <button @click="addItineraryItem" class="flex-[2] xmas-red text-white py-4 rounded-2xl font-black text-xs uppercase shadow-xl active:translate-y-1 transition-all">Save To Itinerary</button>
+                </div>
+            </div>
+        </div>
+    </transition>
+
+    <nav class="bg-white/90 backdrop-blur-md border-t border-gray-100 flex justify-around p-3 pb-8 z-50">
+        <button v-for="t in tabs" @click="currentTab = t.id" 
+            :class="currentTab === t.id ? 'text-xmas-red scale-110' : 'text-gray-300'"
+            class="flex flex-col items-center space-y-1 transition-all">
+            <i :class="t.icon" class="text-xl"></i>
+            <span class="text-[8px] font-black uppercase tracking-tighter">{{ t.name }}</span>
+        </button>
     </nav>
 </div>
 
 <script>
+// Firebase 配置
 const firebaseConfig = {
   apiKey: "AIzaSyCgpe5pVDiX_e7kvgTINptcmqYXtX7V854",
   authDomain: "hongkong-c21fd.firebaseapp.com",
@@ -198,7 +298,6 @@ const firebaseConfig = {
   messagingSenderId: "519310424430",
   appId: "1:519310424430:web:73b13ae9d21e12a818297f"
 };
-
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
@@ -206,55 +305,51 @@ const { createApp } = Vue;
 createApp({
     data() {
         return {
-            currentTab: 'itinerary', currentDay: 1, syncStatus: false,
-            exchangeRate: 4.12, now: new Date(),
-            tabs: [{id:'itinerary', name:'行程', icon:'fas fa-compass'}, {id:'list', name:'清單', icon:'fas fa-gift'}, {id:'expense', name:'記帳', icon:'fas fa-coins'}],
-            days: [
-                {id:1, temp:'--', icon:'fas fa-spinner fa-spin', date:'2025-12-25'}, 
-                {id:2, temp:'--', icon:'fas fa-spinner fa-spin', date:'2025-12-26'}, 
-                {id:3, temp:'--', icon:'fas fa-spinner fa-spin', date:'2025-12-27'}
-            ],
-            itinerary: [[], [], []], packingList: [], shoppingList: [], expenseList: [],
-            newItemName: '', newShopItemName: '', newEx:{name:'', amount:null},
-            tripStart: new Date('2025-12-25T07:50:00'),
-            tripEnd: new Date('2025-12-27T20:45:00')
+            currentTab: 'itinerary', currentDay: 1, syncStatus: false, showModal: false,
+            exchangeRate: 4.12, 
+            tabs: [{id:'itinerary', name:'Itinerary', icon:'fas fa-map-marked-alt'}, {id:'list', name:'Checklist', icon:'fas fa-clipboard-list'}, {id:'expense', name:'Expense', icon:'fas fa-hand-holding-usd'}],
+            days: [{id:1, temp:'--', icon:'fas fa-spinner fa-spin'}, {id:2, temp:'--', icon:'fas fa-spinner fa-spin'}, {id:3, temp:'--', icon:'fas fa-spinner fa-spin'}],
+            itinerary: [[], [], []], 
+            newItem: {time: '12:00', location: '', image: '', mapUrl: '', tag: '📸 景點', note: '', gapInfo: ''},
+            packingList: [], shoppingList: [], expenseList: [],
+            newItemName: '', newShopItemName: '', newEx:{name:'', amount:null}
         }
     },
     computed: {
         currentDayItems() { return this.itinerary[this.currentDay-1] || []; },
-        totalExpense() { return this.expenseList.reduce((sum, i)=> sum + (parseFloat(i.amount)||0), 0); },
-        countdownLabel() { return this.now < this.tripStart ? 'Departing In' : this.now < this.tripEnd ? 'Trip Ending In' : 'Trip Finished'; },
-        countdownText() {
-            let target = this.now < this.tripStart ? this.tripStart : this.tripEnd;
-            let diff = target - this.now;
-            if (diff < 0) return "Merry Christmas!";
-            let d = Math.floor(diff / (1000 * 60 * 60 * 24));
-            let h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            let m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-            let s = Math.floor((diff % (1000 * 60)) / 1000);
-            return `${d}D ${h}H ${m}M ${s}S`;
-        }
+        totalExpense() { return this.expenseList.reduce((sum, i)=> sum + (parseFloat(i.amount)||0), 0); }
     },
     methods: {
+        handleImageUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 600;
+                    let width = img.width, height = img.height;
+                    if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
+                    canvas.width = width; canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    this.newItem.image = canvas.toDataURL('image/jpeg', 0.6);
+                };
+                img.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        },
         async fetchWeather() {
             try {
-                // 抓取香港維多利亞港座標的天氣
                 const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=22.2855&longitude=114.1577&daily=weathercode,temperature_2m_max&timezone=Asia%2FHong_Kong');
                 const data = await res.json();
-                const iconMap = (code) => {
-                    if (code <= 1) return 'fas fa-sun';
-                    if (code <= 3) return 'fas fa-cloud-sun';
-                    if (code <= 48) return 'fas fa-cloud';
-                    return 'fas fa-cloud-showers-heavy';
-                };
-                // 將 API 資料填入 days 陣列
+                const iconMap = code => code <= 1 ? 'fas fa-sun' : code <= 3 ? 'fas fa-cloud-sun' : 'fas fa-cloud';
                 for(let i=0; i<3; i++) {
                     this.days[i].temp = Math.round(data.daily.temperature_2m_max[i]);
                     this.days[i].icon = iconMap(data.daily.weathercode[i]);
                 }
-            } catch (e) {
-                console.error("天氣抓取失敗", e);
-            }
+            } catch (e) {}
         },
         initSync() {
             db.ref('trip_data').on('value', (snapshot) => {
@@ -270,20 +365,33 @@ createApp({
         },
         saveData() {
             db.ref('trip_data').set({
-                itinerary: this.itinerary,
-                packingList: this.packingList,
-                shoppingList: this.shoppingList,
-                expenseList: this.expenseList
+                itinerary: this.itinerary, packingList: this.packingList, shoppingList: this.shoppingList, expenseList: this.expenseList
             });
         },
-        addItem(type) {
-            if(type === 'packing' && this.newItemName) {
-                this.packingList.push({text: this.newItemName, done: false});
-                this.newItemName = '';
-            } else if(type === 'shopping' && this.newShopItemName) {
-                this.shoppingList.push({text: this.newShopItemName, done: false});
-                this.newShopItemName = '';
+        addItineraryItem() {
+            if(!this.newItem.location) return;
+            this.itinerary[this.currentDay-1].push({...this.newItem});
+            this.newItem = {time: '12:00', location: '', image: '', mapUrl: '', tag: '📸 景點', note: '', gapInfo: ''};
+            this.showModal = false;
+            this.saveData();
+        },
+        deleteItem(idx) {
+            if(confirm('確定刪除這個行程嗎？')) {
+                this.itinerary[this.currentDay-1].splice(idx, 1);
+                this.saveData();
             }
+        },
+        moveItem(idx, dir) {
+            let list = this.itinerary[this.currentDay-1];
+            if ((dir === -1 && idx > 0) || (dir === 1 && idx < list.length - 1)) {
+                const item = list.splice(idx, 1)[0];
+                list.splice(idx + dir, 0, item);
+                this.saveData();
+            }
+        },
+        addItem(type) {
+            if(type === 'packing' && this.newItemName) { this.packingList.push({text: this.newItemName, done: false}); this.newItemName = ''; }
+            else if(type === 'shopping' && this.newShopItemName) { this.shoppingList.push({text: this.newShopItemName, done: false}); this.newShopItemName = ''; }
             this.saveData();
         },
         deleteListItem(type, idx) {
@@ -291,21 +399,12 @@ createApp({
             else this.shoppingList.splice(idx, 1);
             this.saveData();
         },
-        getMapLink(input) { return input.startsWith('http') ? input : `https://www.google.com/maps/search/${encodeURIComponent(input)}`; },
         addExpense() { 
-            if (this.newEx.name && this.newEx.amount) { 
-                this.expenseList.push({...this.newEx}); 
-                this.newEx={name:'', amount:null}; 
-                this.saveData(); 
-            } 
+            if (this.newEx.name && this.newEx.amount) { this.expenseList.push({...this.newEx}); this.newEx={name:'', amount:null}; this.saveData(); } 
         },
         deleteExpense(i) { this.expenseList.splice(i, 1); this.saveData(); }
     },
-    mounted() { 
-        this.initSync();
-        this.fetchWeather();
-        setInterval(() => { this.now = new Date(); }, 1000);
-    }
+    mounted() { this.initSync(); this.fetchWeather(); }
 }).mount('#app');
 </script>
 </body>
