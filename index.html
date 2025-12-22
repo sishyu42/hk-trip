@@ -3,9 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>香港聖誕 | 功能全開版</title>
+    <title>香港聖誕 | 雲端同步旗艦版</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&family=Mountains+of+Christmas:wght@700&display=swap');
@@ -20,7 +24,7 @@
         .snowflake { position: absolute; color: white; opacity: 0.5; font-size: 10px; animation: fall linear infinite; pointer-events: none; }
         @keyframes fall { to { transform: translateY(100vh) rotate(360deg); } }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
-        .ticket-stub { background: #FFF9E6; border: 3px solid var(--hk-gold); border-style: dashed; position: relative; border-radius: 12px; }
+        .ticket-stub { background: #FFF9E6; border: 3px solid var(--hk-gold); border-style: dashed; border-radius: 12px; }
         .timeline-path { position: absolute; left: 58px; top: 0; bottom: 0; width: 2px; background: repeating-linear-gradient(to bottom, #D4AF37 0, #D4AF37 5px, transparent 5px, transparent 10px); z-index: 1; }
     </style>
 </head>
@@ -28,11 +32,19 @@
 
 <div id="app" class="flex flex-col h-full w-full max-md mx-auto relative bg-[#FDFCF0] shadow-2xl overflow-hidden border-x-4 border-xmas-red">
     
+    <div class="absolute top-2 right-2 z-[100] flex items-center space-x-1 bg-black/20 px-2 py-0.5 rounded-full">
+        <div class="w-1.5 h-1.5 rounded-full" :class="syncStatus ? 'bg-green-400' : 'bg-red-400 animate-pulse'"></div>
+        <span class="text-[8px] text-white font-black uppercase">{{ syncStatus ? 'Synced' : 'Offline' }}</span>
+    </div>
+
     <div v-for="n in 12" :key="n" class="snowflake" :style="{left: Math.random()*100+'%', animationDuration: (Math.random()*10+5)+'s', animationDelay: Math.random()*5+'s', top: '-20px'}">❄</div>
 
     <header class="xmas-red text-white px-6 pt-10 pb-3 z-30 shadow-lg relative">
         <div class="flex justify-between items-end">
-            <h1 class="text-3xl neon-text tracking-widest">Merry HK</h1>
+            <div>
+                <h1 class="text-3xl neon-text tracking-widest">Merry HK</h1>
+                <p class="text-[9px] font-black uppercase opacity-70">Cloud Sync Active</p>
+            </div>
             <div class="text-right">
                 <p class="text-[10px] font-black uppercase opacity-70">{{ countdownLabel }}</p>
                 <p class="text-xs font-mono font-bold text-hk-gold">{{ countdownText }}</p>
@@ -57,7 +69,7 @@
                         :class="currentDay === d.id ? 'xmas-red text-white shadow-md' : 'bg-white text-gray-400 border'"
                         class="py-2 px-3 rounded-lg text-[10px] font-black">DAY {{ d.id }}</button>
                 </div>
-                <div class="flex items-center space-x-2 bg-white px-3 py-1.5 rounded-full border border-hk-gold/30">
+                <div class="flex items-center space-x-2 bg-white px-3 py-1.5 rounded-full border border-hk-gold/30 shadow-sm">
                     <i :class="days[currentDay-1].icon" class="text-hk-gold text-sm"></i>
                     <span class="text-xs font-black text-xmas-green">{{ days[currentDay-1].temp }}°C</span>
                 </div>
@@ -65,18 +77,18 @@
 
             <div v-if="currentDay === 1 || currentDay === 3" class="ticket-stub p-5 mb-8 mx-1">
                 <div class="flex justify-between items-center border-b-2 border-dashed border-hk-gold/30 pb-2 mb-4 text-[10px] font-black text-xmas-red italic">
-                    <span>FLIGHT TICKET</span>
-                    <span class="text-hk-gold">{{ currentDay === 1 ? 'DEPARTURE' : 'RETURN' }}</span>
+                    <span>FLIGHT PASS</span>
+                    <span class="text-hk-gold uppercase">{{ currentDay === 1 ? 'Go to HK' : 'Return Home' }}</span>
                 </div>
-                <div class="flex justify-between items-center px-2">
+                <div class="flex justify-between items-center">
                     <div class="text-center">
                         <p class="text-4xl font-black text-xmas-red leading-none">{{ currentDay === 1 ? 'KHH' : 'HKG' }}</p>
-                        <p class="text-xs font-black text-xmas-green mt-2">{{ currentDay === 1 ? '07:50' : '20:45' }}</p>
+                        <p class="text-sm font-black text-xmas-green mt-2">{{ currentDay === 1 ? '07:50' : '20:45' }}</p>
                     </div>
                     <div class="flex-1 border-t-2 border-hk-gold/40 border-dotted relative mx-4"><i class="fas fa-sleigh text-hk-gold absolute -top-3 left-1/2 -translate-x-1/2 text-2xl"></i></div>
                     <div class="text-center">
                         <p class="text-4xl font-black text-xmas-red leading-none">{{ currentDay === 1 ? 'HKG' : 'KHH' }}</p>
-                        <p class="text-xs font-black text-xmas-green mt-2">{{ currentDay === 1 ? '09:30' : '22:15' }}</p>
+                        <p class="text-sm font-black text-xmas-green mt-2">{{ currentDay === 1 ? '09:30' : '22:15' }}</p>
                     </div>
                 </div>
             </div>
@@ -106,95 +118,76 @@
                     </div>
                     <div class="absolute -left-14 bottom-[-28px] z-20">
                         <button @click="editGap(item)" class="bg-white text-[9px] font-black text-xmas-red border border-hk-gold/30 rounded-full px-2 py-1 shadow-sm">
-                            <i class="fas fa-clock mr-1"></i>{{ item.gap || '設定間隔' }}
+                            <i class="fas fa-clock mr-1"></i>{{ item.gap || '交通/間隔' }}
                         </button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div v-if="currentTab === 'list'" class="space-y-6 pb-10">
-            <section class="bg-white p-5 rounded-xl shadow-sm border-l-8 border-xmas-green">
-                <h3 class="font-black text-sm text-xmas-green mb-4 italic"> PACKING LIST</h3>
+        <div v-if="currentTab === 'list'" class="space-y-6 pb-20">
+            <section class="bg-white p-5 rounded-2xl shadow-sm border-l-8 border-xmas-green">
+                <h3 class="font-black text-sm text-xmas-green mb-4 italic uppercase">🧳 Packing List</h3>
                 <div class="flex mb-3">
-                    <input v-model="newItemName" @keyup.enter="addItem('packing')" placeholder="帶什麼？" class="flex-1 bg-gray-50 px-3 py-2 rounded-l-lg text-xs outline-none border">
-                    <button @click="addItem('packing')" class="xmas-green text-white px-4 rounded-r-lg text-xs font-black">ADD</button>
+                    <input v-model="newItemName" @keyup.enter="addItem('packing')" placeholder="帶什麼？" class="flex-1 bg-gray-50 px-3 py-3 rounded-l-xl text-xs font-bold outline-none border border-gray-100">
+                    <button @click="addItem('packing')" class="xmas-green text-white px-5 rounded-r-xl text-xs font-black">ADD</button>
                 </div>
-                <div v-for="(item, i) in packingList" :key="i" class="flex items-center justify-between mb-2">
-                    <div class="flex items-center">
-                        <input type="checkbox" v-model="item.done" @change="saveData" class="w-4 h-4 accent-xmas-green">
-                        <span class="ml-2 text-xs font-bold" :class="item.done ? 'line-through text-gray-300' : 'text-xmas-green'">{{ item.text }}</span>
+                <div v-for="(item, i) in packingList" :key="i" class="flex items-center justify-between mb-2 p-1">
+                    <div class="flex items-center" @click="item.done = !item.done; saveData()">
+                        <i :class="item.done ? 'fas fa-check-square text-xmas-green' : 'far fa-square text-gray-300'" class="text-lg"></i>
+                        <span class="ml-3 text-xs font-bold" :class="item.done ? 'line-through text-gray-300' : 'text-xmas-green'">{{ item.text }}</span>
                     </div>
-                    <button @click="deleteListItem('packing', i)" class="text-gray-200 hover:text-red-500"><i class="fas fa-times text-xs"></i></button>
+                    <button @click="deleteListItem('packing', i)" class="text-gray-200 px-2"><i class="fas fa-times"></i></button>
                 </div>
             </section>
 
-            <section class="bg-white p-5 rounded-xl shadow-sm border-l-8 border-hk-gold">
-                <h3 class="font-black text-sm text-hk-gold mb-4 italic"> SHOPPING LIST</h3>
+            <section class="bg-white p-5 rounded-2xl shadow-sm border-l-8 border-hk-gold">
+                <h3 class="font-black text-sm text-hk-gold mb-4 italic uppercase">🛍️ Shopping List</h3>
                 <div class="flex mb-3">
-                    <input v-model="newShopName" @keyup.enter="addItem('shopping')" placeholder="買什麼？" class="flex-1 bg-gray-50 px-3 py-2 rounded-l-lg text-xs outline-none border">
-                    <button @click="addItem('shopping')" class="bg-hk-gold text-white px-4 rounded-r-lg text-xs font-black">ADD</button>
+                    <input v-model="newShopName" @keyup.enter="addItem('shopping')" placeholder="想買什麼？" class="flex-1 bg-gray-50 px-3 py-3 rounded-l-xl text-xs font-bold outline-none border border-gray-100">
+                    <button @click="addItem('shopping')" class="bg-[#A61B1B] text-white px-5 rounded-r-xl text-xs font-black">ADD</button>
                 </div>
-                <div v-for="(item, i) in shoppingList" :key="i" class="flex items-center justify-between mb-2">
-                    <div class="flex items-center">
-                        <input type="checkbox" v-model="item.done" @change="saveData" class="w-4 h-4 accent-hk-gold">
-                        <span class="ml-2 text-xs font-bold" :class="item.done ? 'line-through text-gray-300' : 'text-gray-700'">{{ item.text }}</span>
+                <div v-for="(item, i) in shoppingList" :key="i" class="flex items-center justify-between mb-2 p-1">
+                    <div class="flex items-center" @click="item.done = !item.done; saveData()">
+                        <i :class="item.done ? 'fas fa-check-square text-hk-gold' : 'far fa-square text-gray-300'" class="text-lg"></i>
+                        <span class="ml-3 text-xs font-bold" :class="item.done ? 'line-through text-gray-300' : 'text-gray-700'">{{ item.text }}</span>
                     </div>
-                    <button @click="deleteListItem('shopping', i)" class="text-gray-200 hover:text-red-500"><i class="fas fa-times text-xs"></i></button>
+                    <button @click="deleteListItem('shopping', i)" class="text-gray-200 px-2"><i class="fas fa-times"></i></button>
                 </div>
             </section>
         </div>
 
         <div v-if="currentTab === 'expense'" class="flex flex-col h-full space-y-4">
-            <div class="bg-white p-5 rounded-2xl shadow-lg border-2 border-hk-gold/30 relative text-center">
-                <div class="text-[9px] font-black text-hk-gold mb-1 uppercase tracking-widest">1 HKD ≈ {{ exchangeRate }} TWD</div>
+            <div class="bg-white p-6 rounded-2xl shadow-lg border-2 border-hk-gold/30 text-center relative">
+                <div class="text-[9px] font-black text-hk-gold mb-1 uppercase tracking-widest">Live Rate: 1 HKD ≈ {{ exchangeRate }} TWD</div>
                 <p class="text-[10px] font-black text-gray-400 mb-1">TOTAL EXPENSE</p>
                 <p class="text-3xl font-black text-xmas-red mb-4">NT$ {{ Math.round(totalExpense * exchangeRate).toLocaleString() }}</p>
                 
                 <div class="space-y-2">
-                    <input v-model="newEx.name" placeholder="項目名稱 (如：甘牌燒鵝)" 
-                           class="w-full bg-gray-50 border border-gray-200 p-3 rounded-xl text-sm font-bold outline-none focus:border-xmas-red transition-colors">
+                    <input v-model="newEx.name" placeholder="項目名稱" class="w-full bg-gray-50 border border-gray-200 p-3 rounded-xl text-sm font-bold outline-none focus:border-xmas-red">
                     <div class="flex space-x-2">
-                        <div class="relative flex-1">
-                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs font-bold">$</span>
-                            <input v-model.number="newEx.amount" type="number" placeholder="HKD 金額" 
-                                   class="w-full bg-gray-50 border border-gray-200 p-3 pl-7 rounded-xl text-sm font-bold outline-none focus:border-xmas-red transition-colors">
-                        </div>
-                        <button @click="addExpense" class="xmas-red text-white px-6 py-3 rounded-xl text-sm font-black shadow-md active:scale-95 transition-transform">
-                            ADD
-                        </button>
+                        <input v-model.number="newEx.amount" type="number" placeholder="HKD 金額" class="flex-1 bg-gray-50 border border-gray-200 p-3 rounded-xl text-sm font-bold outline-none focus:border-xmas-red">
+                        <button @click="addExpense" class="xmas-red text-white px-6 py-3 rounded-xl text-sm font-black shadow-md">ADD</button>
                     </div>
                 </div>
             </div>
 
             <div class="flex-1 overflow-y-auto space-y-2 pb-20 hide-scrollbar">
                 <div v-for="(ex, i) in expenseList" :key="i" class="flex justify-between items-center bg-white p-4 rounded-xl shadow-sm border border-gray-100">
-                    <div class="flex-1 pr-2">
+                    <div class="flex-1 truncate pr-2">
                         <p class="font-black text-sm text-xmas-green truncate">{{ ex.name }}</p>
                         <p class="text-[10px] font-bold text-hk-gold">≈ NT$ {{ Math.round(ex.amount * exchangeRate) }}</p>
                     </div>
                     <div class="flex items-center space-x-3">
                         <span class="font-black text-xmas-red text-base">${{ ex.amount }}</span>
-                        <button @click="deleteExpense(i)" class="text-gray-200 hover:text-red-500 transition-colors">
-                            <i class="fas fa-times-circle text-lg"></i>
-                        </button>
+                        <button @click="deleteExpense(i)" class="text-gray-200"><i class="fas fa-times-circle text-lg"></i></button>
                     </div>
                 </div>
-                <div v-if="expenseList.length === 0" class="text-center py-10 opacity-20">
-                    <i class="fas fa-receipt text-4xl mb-2"></i>
-                    <p class="text-xs font-black">尚未有記帳資料</p>
-                </div>
             </div>
+        </div>
+    </main>
 
-            <div class="mt-auto pt-4 border-t border-dashed border-gray-200 pb-10">
-                <div class="grid grid-cols-2 gap-2">
-                    <button @click="exportData" class="py-2 bg-white border border-gray-200 text-gray-400 rounded-lg text-[9px] font-black uppercase">Export</button>
-                    <button @click="importData" class="py-2 bg-white border border-gray-200 text-gray-400 rounded-lg text-[9px] font-black uppercase">Import</button>
-                </div>
-            </div>
-        </div>    </main>
-
-    <button v-if="currentTab === 'itinerary'" @click="showModal = true" class="absolute bottom-24 right-6 w-14 h-14 xmas-red text-white rounded-full shadow-xl flex items-center justify-center z-50 border-2 border-white/30"><i class="fas fa-plus text-xl"></i></button>
+    <button v-if="currentTab === 'itinerary'" @click="showModal = true" class="absolute bottom-24 right-6 w-14 h-14 xmas-red text-white rounded-full shadow-xl flex items-center justify-center z-50 border-2 border-white/30 active:scale-95 transition-transform"><i class="fas fa-plus text-xl"></i></button>
 
     <div v-if="showModal" class="fixed inset-0 bg-black/70 z-[100] flex items-end justify-center backdrop-blur-sm">
         <div class="bg-[#FDFCF0] rounded-t-[2rem] w-full p-8 max-h-[85vh] overflow-y-auto border-t-8 border-xmas-red">
@@ -202,38 +195,53 @@
             <div class="space-y-4">
                 <div class="grid grid-cols-2 gap-3">
                     <input v-model="newItem.time" type="time" class="p-4 bg-white rounded-xl font-bold text-xs border outline-none">
-                    <select v-model="newItem.category" class="p-4 bg-white rounded-xl font-bold text-xs border outline-none">
+                    <select v-model="newItem.category" class="p-4 bg-white rounded-xl font-bold text-xs border outline-none text-center">
                         <option v-for="c in categories" :value="c">{{c}}</option>
                     </select>
                 </div>
                 <input v-model="newItem.location" placeholder="地點名稱" class="w-full p-4 bg-white rounded-xl font-bold text-xs border outline-none">
                 <input v-model="newItem.mapUrl" placeholder="地址、店名或 Google Maps 連結" class="w-full p-4 bg-white rounded-xl font-bold text-xs border outline-none">
                 <textarea v-model="newItem.note" placeholder="備註..." class="w-full p-4 bg-white rounded-xl font-bold text-xs h-20 border outline-none"></textarea>
-                
                 <div class="border-2 border-dashed border-hk-gold/30 rounded-xl p-6 bg-white text-center relative overflow-hidden">
                     <input type="file" @change="handleFileUpload" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer">
                     <div v-if="!newItem.image"><i class="fas fa-camera text-2xl text-hk-gold/40 mb-2"></i><p class="text-[10px] text-gray-400 font-black uppercase">Upload Photo</p></div>
-                    <img v-else :src="newItem.image" class="h-32 w-full object-cover rounded-lg">
+                    <img v-else :src="newItem.image" class="h-32 w-full object-cover rounded-lg mx-auto">
                 </div>
             </div>
             <div class="flex space-x-3 mt-8 pb-4">
-                <button @click="showModal = false" class="flex-1 py-4 text-gray-400 font-black text-[11px] uppercase">Cancel</button>
-                <button @click="confirmAdd" class="flex-1 py-4 xmas-red text-white font-black rounded-xl text-[11px] uppercase shadow-lg">Add to Day {{ currentDay }}</button>
+                <button @click="showModal = false" class="flex-1 py-4 text-gray-400 font-black text-xs uppercase">Cancel</button>
+                <button @click="confirmAdd" class="flex-1 py-4 xmas-red text-white font-black rounded-xl text-xs uppercase shadow-lg">Confirm Add</button>
             </div>
         </div>
     </div>
 
-    <nav class="bg-white border-t border-gray-100 flex justify-around p-3 pb-8 z-50 shadow-2xl">
+    <nav class="bg-white border-t border-gray-100 flex justify-around p-3 pb-8 z-50">
         <button v-for="t in tabs" @click="currentTab = t.id" :class="currentTab === t.id ? 'text-xmas-red scale-125' : 'text-gray-300'"><i :class="t.icon + ' text-xl'"></i></button>
     </nav>
 </div>
 
 <script>
+// --- 重要：替換為你的 Firebase SDK 設定 ---
+const firebaseConfig = {
+  apiKey: "AIzaSyCgpe5pVDiX_e7kvgTINptcmqYXtX7V854",
+  authDomain: "hongkong-c21fd.firebaseapp.com",
+  databaseURL: "https://hongkong-c21fd-default-rtdb.firebaseio.com",
+  projectId: "hongkong-c21fd",
+  storageBucket: "hongkong-c21fd.firebasestorage.app",
+  messagingSenderId: "519310424430",
+  appId: "1:519310424430:web:73b13ae9d21e12a818297f"
+};
+
+
+// 初始化 Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
 const { createApp } = Vue;
 createApp({
     data() {
         return {
-            currentTab: 'itinerary', currentDay: 1, showModal: false, 
+            currentTab: 'itinerary', currentDay: 1, showModal: false, syncStatus: false,
             exchangeRate: 4.12, weatherLoading: true, now: new Date(),
             tabs: [{id:'itinerary', name:'行程', icon:'fas fa-compass'}, {id:'list', name:'清單', icon:'fas fa-gift'}, {id:'expense', name:'記帳', icon:'fas fa-coins'}],
             days: [{id:1, temp:'--', icon:'fas fa-sun'}, {id:2, temp:'--', icon:'fas fa-sun'}, {id:3, temp:'--', icon:'fas fa-sun'}],
@@ -261,13 +269,44 @@ createApp({
         }
     },
     methods: {
+        // --- Firebase 同步邏輯 ---
+        initSync() {
+            // 監聽雲端資料庫變化
+            db.ref('trip_data').on('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    this.itinerary = data.itinerary || [[], [], []];
+                    this.packingList = data.packingList || [];
+                    this.shoppingList = data.shoppingList || [];
+                    this.expenseList = data.expenseList || [];
+                }
+                this.syncStatus = true; // 連線成功
+            }, (error) => {
+                console.error("Firebase 連線失敗:", error);
+                this.syncStatus = false;
+            });
+        },
+        saveData() {
+            // 寫入雲端資料庫
+            db.ref('trip_data').set({
+                itinerary: this.itinerary,
+                packingList: this.packingList,
+                shoppingList: this.shoppingList,
+                expenseList: this.expenseList
+            }).then(() => {
+                console.log("資料已同步到雲端");
+            }).catch((err) => {
+                console.error("同步失敗:", err);
+            });
+        },
+        // --- 業務邏輯 ---
         async fetchWeather() {
             try {
                 const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=22.2783&longitude=114.1747&daily=weathercode,temperature_2m_max&timezone=Asia%2FHong_Kong');
                 const data = await res.json();
                 const map = (c) => c <= 3 ? 'fas fa-sun' : c <= 48 ? 'fas fa-cloud' : c <= 67 ? 'fas fa-cloud-rain' : 'fas fa-snowflake';
                 for(let i=0; i<3; i++) { this.days[i].temp = Math.round(data.daily.temperature_2m_max[i]); this.days[i].icon = map(data.daily.weathercode[i]); }
-            } finally { this.weatherLoading = false; }
+            } catch (e) {}
         },
         async fetchExchangeRate() {
             try {
@@ -289,8 +328,9 @@ createApp({
         },
         handleFileUpload(e) {
             const file = e.target.files[0]; if (!file) return;
+            // 注意：Firebase Realtime Database 儲存 Base64 圖片有大小限制(約10MB)
             const reader = new FileReader();
-            reader.onload = (event) => { this.newItem.image = event.target.result; };
+            reader.onload = (ev) => { this.newItem.image = ev.target.result; };
             reader.readAsDataURL(file);
         },
         confirmAdd() {
@@ -303,23 +343,15 @@ createApp({
             const target = idx + dir;
             if (target >= 0 && target < list.length) { [list[idx], list[target]] = [list[target], list[idx]]; this.saveData(); }
         },
-        editGap(item) { const val = prompt('設定間距 (如: 步行10分鐘):', item.gap); if (val !== null) { item.gap = val; this.saveData(); } },
+        editGap(item) { const val = prompt('設定交通時間/備註:', item.gap); if (val !== null) { item.gap = val; this.saveData(); } },
         deleteItem(idx) { if(confirm('確定刪除？')) { this.itinerary[this.currentDay-1].splice(idx, 1); this.saveData(); } },
         addExpense() { if (this.newEx.name && this.newEx.amount) { this.expenseList.push({...this.newEx}); this.newEx={name:'', amount:null}; this.saveData(); } },
-        deleteExpense(i) { this.expenseList.splice(i, 1); this.saveData(); },
-        exportData() {
-            const data = localStorage.getItem('hk_xmas_ultimate_v7');
-            prompt('請複製以下代碼傳送到手機：', data);
-        },
-        importData() {
-            const code = prompt('請貼上備備份代碼：');
-            if(code) { localStorage.setItem('hk_xmas_ultimate_v7', code); location.reload(); }
-        },
-        saveData() { localStorage.setItem('hk_xmas_ultimate_v7', JSON.stringify({itinerary:this.itinerary, packingList:this.packingList, shoppingList:this.shoppingList, expenseList:this.expenseList})); },
-        loadData() { const d = JSON.parse(localStorage.getItem('hk_xmas_ultimate_v7')); if(d) Object.assign(this, d); }
+        deleteExpense(i) { this.expenseList.splice(i, 1); this.saveData(); }
     },
     mounted() { 
-        this.loadData(); this.fetchWeather(); this.fetchExchangeRate();
+        this.initSync(); // 改為啟動雲端同步
+        this.fetchWeather(); 
+        this.fetchExchangeRate();
         setInterval(() => { this.now = new Date(); }, 1000);
     }
 }).mount('#app');
