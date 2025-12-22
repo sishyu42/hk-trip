@@ -10,12 +10,38 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&family=Playfair+Display:ital,wght@0,900;1,900&display=swap" rel="stylesheet">
-    
-    <style>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Cinzel+Decorative:wght@700&family=Great+Vibes&family=Mountains+of+Christmas:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Pacifico&family=Abril+Fatface&family=Cinzel+Decorative:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Pacifico&family=Abril+Fatface&family=Cinzel+Decorative:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Righteous&family=Tenor+Sans&family=Permanent+Marker&family=Orbitron:wght@900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;1,600&family=Josefin+Sans:wght@600&family=Libre+Baskerville:ital@1&display=swap" rel="stylesheet">
+   <style>
         :root { --xmas-red: #A61B1B; --xmas-green: #044A05; --hk-gold: #D4AF37; --bg-cream: #FDFCF0; }
         body { background-color: var(--bg-cream); font-family: 'Noto Sans TC', sans-serif; color: #1F2937; overflow-x: hidden; height: 100vh; }
         .header-bg { background-image: linear-gradient(to bottom, rgba(166, 27, 27,0.4), rgba(166, 27, 27, 0.7)), url('./images/bg.jpeg'); background-size: cover; background-position: center; border-bottom: 3px solid var(--hk-gold); }
-        .brand-text { font-family: 'Playfair Display', serif; font-weight: 900; font-style: italic; letter-spacing: 1px; text-shadow: 0 2px 10px rgba(0,0,0,0.3); }
+        .brand-text {
+    font-family: 'Cormorant Garamond', serif;
+    /* 調大尺寸並加粗 */
+    font-size: 3.5rem; 
+    font-weight: 700;
+    font-style: italic;
+    letter-spacing: 2px;
+    
+    /* 核心：霓虹感多層陰影 */
+    /* 1. 白色核心 2. 金色強光 3. 聖誕紅環境光暈 4. 深色背景層次 */
+    color: #FFF; /* 霓虹燈管中心通常是白色的，靠陰影發光 */
+    text-shadow: 
+        0 0 5px #FFF,
+        0 0 10px var(--hk-gold),
+        0 0 20px var(--hk-gold),
+        0 0 40px var(--xmas-red),
+        2px 2px 5px rgba(0,0,0,0.5);
+    
+    /* 讓文字有一點點傾斜的動態感 */
+    transform: rotate(-1deg);
+    display: inline-block;
+}
+
         .xmas-red { background-color: var(--xmas-red); }
         .xmas-green { background-color: var(--xmas-green); }
         .text-xmas-red { color: var(--xmas-red); }
@@ -41,7 +67,7 @@
     <div v-for="n in 12" :key="n" class="snowflake" :style="{left: Math.random()*100+'%', animationDuration: (Math.random()*10+5)+'s', animationDelay: Math.random()*5+'s', top: '-20px'}">❄</div>
 
     <header class="header-bg text-white px-6 pt-12 pb-5 z-30 shadow-lg relative">
-        <h1 class="brand-text text-3xl">Merry HK</h1>
+        <h1 class="brand-text text-3xl">HONG KONG </h1>
         <div class="flex items-center space-x-2 opacity-80 mt-1">
             <span class="w-6 h-[1px] bg-hk-gold"></span>
             <p class="text-[9px] font-black uppercase tracking-widest">January , 2026</p>
