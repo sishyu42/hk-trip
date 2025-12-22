@@ -164,10 +164,17 @@
                 <p class="text-3xl font-black text-xmas-red mb-4">NT$ {{ Math.round(totalExpense * exchangeRate).toLocaleString() }}</p>
                 
                 <div class="space-y-2">
-                    <input v-model="newEx.name" placeholder="項目名稱" class="w-full bg-gray-50 border border-gray-200 p-3 rounded-xl text-sm font-bold outline-none focus:border-xmas-red">
+                    <input v-model="newEx.name" placeholder="項目名稱" 
+                           class="w-full bg-gray-50 border border-gray-200 p-3 rounded-xl text-sm font-bold outline-none focus:border-xmas-red">
+                    
                     <div class="flex space-x-2">
-                        <input v-model.number="newEx.amount" type="number" placeholder="HKD 金額" class="flex-1 bg-gray-50 border border-gray-200 p-3 rounded-xl text-sm font-bold outline-none focus:border-xmas-red">
-                        <button @click="addExpense" class="xmas-red text-white px-6 py-3 rounded-xl text-sm font-black shadow-md">ADD</button>
+                        <input v-model.number="newEx.amount" type="number" placeholder="金額" 
+                               class="flex-1 min-w-0 bg-gray-50 border border-gray-200 p-3 rounded-xl text-sm font-bold outline-none focus:border-xmas-red">
+                        
+                        <button @click="addExpense" 
+                                class="w-20 xmas-red text-white py-3 rounded-xl text-sm font-black shadow-md active:scale-95 transition-transform">
+                            ADD
+                        </button>
                     </div>
                 </div>
             </div>
