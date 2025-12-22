@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>香港聖誕 | 2025 旗艦版</title>
+    <title>香港Trip</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
@@ -19,26 +19,23 @@
         body { background-color: var(--bg-cream); font-family: 'Noto Sans TC', sans-serif; color: #1F2937; overflow-x: hidden; height: 100vh; }
         .header-bg { background-image: linear-gradient(to bottom, rgba(166, 27, 27,0.4), rgba(166, 27, 27, 0.7)), url('./images/bg.jpeg'); background-size: cover; background-position: center; border-bottom: 3px solid var(--hk-gold); }
         .brand-text {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 10rem;      /* 字體再加大 */
-    font-weight: 900;       /* 強制推到最粗 */
-    font-style: italic;     /* 復古斜體 */
-    letter-spacing: 1px;    /* 縮小字距讓視覺更濃厚 */
-    
-    /* 霓虹核心：白色本體配合強烈金紅光暈 */
-    color: #FFFFFF; 
-    text-shadow: 
-        0 0 7px #fff,                /* 內發光 */
-        0 0 15px var(--hk-gold),     /* 主霓虹色 */
-        0 0 30px var(--hk-gold),     /* 中層擴散 */
-        0 0 50px var(--xmas-red),    /* 外層聖誕紅氛圍 */
-        3px 4px 8px rgba(0,0,0,0.6); /* 底部深色立體陰影 */
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 10rem;      /* 字體再加大 */
+            font-weight: 900;       /* 強制推到最粗 */
+            letter-spacing: 1px;    /* 縮小字距讓視覺更濃厚 */
+            
+            /* 霓虹核心：白色本體配合強烈金紅光暈 */
+            color: #FFFFFF; 
+            text-shadow: 
+                0 0 7px #fff,                /* 內發光 */
+                0 0 15px var(--hk-gold),     /* 主霓虹色 */
+                0 0 30px var(--hk-gold),     /* 中層擴散 */
+                0 0 50px var(--xmas-red),    /* 外層聖誕紅氛圍 */
+                3px 4px 8px rgba(0,0,0,0.6); /* 底部深色立體陰影 */
 
-    /* 輕微旋轉更有老招牌的感覺 */
-    transform: rotate(-2deg);
-    display: inline-block;
-    line-height: 1.1;
-}
+            /* 輕微旋轉更有老招牌的感覺 */
+            
+        }
         .xmas-red { background-color: var(--xmas-red); }
         .xmas-green { background-color: var(--xmas-green); }
         .text-xmas-red { color: var(--xmas-red); }
@@ -304,11 +301,12 @@
 
     <nav class="fixed bottom-0 left-0 w-full bg-white/90 backdrop-blur-md border-t border-gray-100 flex justify-around p-3 pb-8 z-[100]">
         <button v-for="t in tabs" @click="currentTab = t.id" 
-            :class="currentTab === t.id ? 'text-xmas-red scale-110' : 'text-gray-300'"
+            :class="currentTab === t.id ? 'text-xmas-red scale-110' : 'text-[var(--xmas-green)]'"
             class="flex flex-col items-center space-y-1 transition-all">
             <i :class="t.icon" class="text-xl"></i>
             <span class="text-[8px] font-black uppercase tracking-tighter">{{ t.name }}</span>
         </button>
+   
     </nav>
 </div>
 
@@ -332,8 +330,12 @@ createApp({
         return {
             currentTab: 'itinerary', currentDay: 1, syncStatus: false, showModal: false,
             exchangeRate: 4.12, 
-            tabs: [{id:'itinerary', name:'Itinerary', icon:'fas fa-map-marked-alt'}, {id:'list', name:'Checklist', icon:'fas fa-clipboard-list'}, {id:'expense', name:'Expense', icon:'fas fa-hand-holding-usd'}],
-            days: [{id:1, temp:'--', icon:'fas fa-spinner fa-spin'}, {id:2, temp:'--', icon:'fas fa-spinner fa-spin'}, {id:3, temp:'--', icon:'fas fa-spinner fa-spin'}],
+            tabs: [
+                        {id:'itinerary', name:'行程', icon:'fas fa-sleigh'},          // 雪橇
+                        {id:'list', name:'清單', icon:'fa-solid fa-candy-cane'},     // 冬青葉
+                        {id:'expense', name:'記帳', icon:'fa-solid fa-piggy-bank'}             // 禮物盒
+                    ],     
+           days: [{id:1, temp:'--', icon:'fas fa-spinner fa-spin'}, {id:2, temp:'--', icon:'fas fa-spinner fa-spin'}, {id:3, temp:'--', icon:'fas fa-spinner fa-spin'}],
             itinerary: [[], [], []], 
             newItem: {time: '12:00', location: '', image: '', mapUrl: '', tag: '📸 景點', note: '', gapInfo: ''},
             packingList: [], shoppingList: [], expenseList: [],
