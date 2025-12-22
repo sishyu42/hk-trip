@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>香港聖誕 | 雲端同步旗艦版</title>
+    <title>香港聖誕 | 2025 旗艦版</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     
@@ -11,15 +11,19 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&family=Playfair+Display:ital,wght@0,900;1,900&display=swap" rel="stylesheet">
+    
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&family=Mountains+of+Christmas:wght@700&display=swap');
         :root { --xmas-red: #A61B1B; --xmas-green: #044A05; --hk-gold: #D4AF37; --bg-cream: #FDFCF0; }
-        body { background-color: var(--bg-cream); font-family: 'Noto Sans TC', sans-serif; color: #1F2937; overflow: hidden; height: 100vh; }
-        .neon-text { text-shadow: 0 0 5px #fff, 0 0 10px var(--xmas-red); font-family: 'Mountains of Christmas', cursive; }
+        body { background-color: var(--bg-cream); font-family: 'Noto Sans TC', sans-serif; color: #1F2937; overflow-x: hidden; height: 100vh; }
+        .header-bg {
+            background-image: linear-gradient(to bottom, rgba(166, 27, 27,0.4), rgba(166, 27, 27, 0.7)), url('./images/bg.jpeg'); 
+            background-size: cover; background-position: center; border-bottom: 3px solid var(--hk-gold);
+        }
+        .brand-text { font-family: 'Playfair Display', serif; font-weight: 900; font-style: italic; letter-spacing: 1px; text-shadow: 0 2px 10px rgba(0,0,0,0.3); }
         .xmas-red { background-color: var(--xmas-red); }
         .xmas-green { background-color: var(--xmas-green); }
         .text-xmas-red { color: var(--xmas-red); }
-        .text-xmas-green { color: var(--xmas-green); }
         .text-hk-gold { color: var(--hk-gold); }
         .snowflake { position: absolute; color: white; opacity: 0.5; font-size: 10px; animation: fall linear infinite; pointer-events: none; }
         @keyframes fall { to { transform: translateY(100vh) rotate(360deg); } }
@@ -39,15 +43,18 @@
 
     <div v-for="n in 12" :key="n" class="snowflake" :style="{left: Math.random()*100+'%', animationDuration: (Math.random()*10+5)+'s', animationDelay: Math.random()*5+'s', top: '-20px'}">❄</div>
 
-    <header class="xmas-red text-white px-6 pt-10 pb-3 z-30 shadow-lg relative">
-        <div class="flex justify-between items-end">
+    <header class="header-bg text-white px-6 pt-12 pb-5 z-30 shadow-lg relative">
+        <div class="flex justify-between items-center">
             <div>
-                <h1 class="text-3xl neon-text tracking-widest">Merry HK</h1>
-                <p class="text-[9px] font-black uppercase opacity-70">Cloud Sync Active</p>
+                <h1 class="brand-text text-3xl">Merry HK</h1>
+                <div class="flex items-center space-x-2 opacity-80 mt-1">
+                    <span class="w-6 h-[1px] bg-hk-gold"></span>
+                    <p class="text-[9px] font-black uppercase tracking-widest">January , 2026</p>
+                </div>
             </div>
-            <div class="text-right">
-                <p class="text-[10px] font-black uppercase opacity-70">{{ countdownLabel }}</p>
-                <p class="text-xs font-mono font-bold text-hk-gold">{{ countdownText }}</p>
+            <div class="text-right bg-black/30 p-2 rounded-lg backdrop-blur-sm border border-white/10">
+                <p class="text-[8px] font-black uppercase opacity-70 text-hk-gold">{{ countdownLabel }}</p>
+                <p class="text-xs font-mono font-bold">{{ countdownText }}</p>
             </div>
         </div>
     </header>
@@ -106,20 +113,11 @@
                                 <h3 class="font-black text-sm text-xmas-green">{{ item.location }}</h3>
                                 <p v-if="item.note" class="text-[10px] text-gray-400 mt-1 italic border-l-2 border-hk-gold pl-2">{{ item.note }}</p>
                             </div>
-                            <div class="flex flex-col space-y-2 ml-2 items-end">
-                                <div class="flex space-x-1">
-                                    <a v-if="item.mapUrl" :href="getMapLink(item.mapUrl)" target="_blank" class="bg-blue-50 text-blue-500 p-2 rounded-lg"><i class="fas fa-map-marked-alt text-xs"></i></a>
-                                    <button @click="moveItem(index, -1)" class="bg-gray-50 text-gray-400 p-2 rounded-lg"><i class="fas fa-chevron-up text-[10px]"></i></button>
-                                    <button @click="moveItem(index, 1)" class="bg-gray-50 text-gray-400 p-2 rounded-lg"><i class="fas fa-chevron-down text-[10px]"></i></button>
-                                    <button @click="deleteItem(index)" class="bg-red-50 text-red-500 p-2 rounded-lg"><i class="fas fa-trash text-[10px]"></i></button>
-                                </div>
+                            <div class="flex space-x-1 ml-2">
+                                <a v-if="item.mapUrl" :href="getMapLink(item.mapUrl)" target="_blank" class="bg-blue-50 text-blue-500 p-2 rounded-lg"><i class="fas fa-map-marked-alt text-xs"></i></a>
+                                <button @click="deleteItem(index)" class="bg-red-50 text-red-500 p-2 rounded-lg"><i class="fas fa-trash text-[10px]"></i></button>
                             </div>
                         </div>
-                    </div>
-                    <div class="absolute -left-14 bottom-[-28px] z-20">
-                        <button @click="editGap(item)" class="bg-white text-[9px] font-black text-xmas-red border border-hk-gold/30 rounded-full px-2 py-1 shadow-sm">
-                            <i class="fas fa-clock mr-1"></i>{{ item.gap || '交通/間隔' }}
-                        </button>
                     </div>
                 </div>
             </div>
@@ -132,7 +130,7 @@
                     <input v-model="newItemName" @keyup.enter="addItem('packing')" placeholder="帶什麼？" class="flex-1 bg-gray-50 px-3 py-3 rounded-l-xl text-xs font-bold outline-none border border-gray-100">
                     <button @click="addItem('packing')" class="xmas-green text-white px-5 rounded-r-xl text-xs font-black">ADD</button>
                 </div>
-                <div v-for="(item, i) in packingList" :key="i" class="flex items-center justify-between mb-2 p-1">
+                <div v-for="(item, i) in packingList" :key="i" class="flex items-center justify-between mb-2">
                     <div class="flex items-center" @click="item.done = !item.done; saveData()">
                         <i :class="item.done ? 'fas fa-check-square text-xmas-green' : 'far fa-square text-gray-300'" class="text-lg"></i>
                         <span class="ml-3 text-xs font-bold" :class="item.done ? 'line-through text-gray-300' : 'text-xmas-green'">{{ item.text }}</span>
@@ -140,17 +138,17 @@
                     <button @click="deleteListItem('packing', i)" class="text-gray-200 px-2"><i class="fas fa-times"></i></button>
                 </div>
             </section>
-
-            <section class="bg-white p-5 rounded-2xl shadow-sm border-l-8 border-hk-gold">
+            
+            <section class="bg-white p-5 rounded-2xl shadow-sm border-l-8 border-hk-gold mt-6">
                 <h3 class="font-black text-sm text-hk-gold mb-4 italic uppercase">🛍️ Shopping List</h3>
                 <div class="flex mb-3">
-                    <input v-model="newShopName" @keyup.enter="addItem('shopping')" placeholder="想買什麼？" class="flex-1 bg-gray-50 px-3 py-3 rounded-l-xl text-xs font-bold outline-none border border-gray-100">
-                    <button @click="addItem('shopping')" class="bg-[#A61B1B] text-white px-5 rounded-r-xl text-xs font-black">ADD</button>
+                    <input v-model="newShopItemName" @keyup.enter="addItem('shopping')" placeholder="想買什麼？" class="flex-1 bg-gray-50 px-3 py-3 rounded-l-xl text-xs font-bold outline-none border border-gray-100">
+                    <button @click="addItem('shopping')" class="bg-hk-gold text-white px-5 rounded-r-xl text-xs font-black">ADD</button>
                 </div>
-                <div v-for="(item, i) in shoppingList" :key="i" class="flex items-center justify-between mb-2 p-1">
+                <div v-for="(item, i) in shoppingList" :key="i" class="flex items-center justify-between mb-2">
                     <div class="flex items-center" @click="item.done = !item.done; saveData()">
                         <i :class="item.done ? 'fas fa-check-square text-hk-gold' : 'far fa-square text-gray-300'" class="text-lg"></i>
-                        <span class="ml-3 text-xs font-bold" :class="item.done ? 'line-through text-gray-300' : 'text-gray-700'">{{ item.text }}</span>
+                        <span class="ml-3 text-xs font-bold" :class="item.done ? 'line-through text-gray-300' : 'text-xmas-green'">{{ item.text }}</span>
                     </div>
                     <button @click="deleteListItem('shopping', i)" class="text-gray-200 px-2"><i class="fas fa-times"></i></button>
                 </div>
@@ -159,33 +157,25 @@
 
         <div v-if="currentTab === 'expense'" class="flex flex-col h-full space-y-4">
             <div class="bg-white p-4 rounded-2xl shadow-lg border-2 border-hk-gold/30 text-center relative">
-                <div class="text-[9px] font-black text-hk-gold mb-1 uppercase tracking-widest">Live Rate: 1 HKD ≈ {{ exchangeRate }} TWD</div>
-                <p class="text-[10px] font-black text-gray-400 mb-2">TOTAL EXPENSE</p>
+                <div class="text-[9px] font-black text-hk-gold mb-1 uppercase tracking-widest">Rate: 1 HKD ≈ {{ exchangeRate }} TWD</div>
+                <p class="text-[10px] font-black text-gray-400 mb-2 uppercase">Total Spent</p>
                 <p class="text-3xl font-black text-xmas-red mb-4">NT$ {{ Math.round(totalExpense * exchangeRate).toLocaleString() }}</p>
-                
                 <div class="flex flex-col space-y-1.5">
-                    <input v-model="newEx.name" placeholder="項目 (如: 蛋塔)" 
-                           class="w-full bg-gray-50 border border-gray-100 px-3 py-2 rounded-lg text-xs font-bold outline-none focus:border-xmas-red">
-                    
+                    <input v-model="newEx.name" placeholder="項目" class="w-full bg-gray-50 border border-gray-100 px-3 py-2 rounded-lg text-xs font-bold outline-none">
                     <div class="flex space-x-1.5">
-                        <input v-model.number="newEx.amount" type="number" placeholder="HKD 金額" 
-                               class="flex-1 min-w-0 bg-gray-50 border border-gray-100 px-3 py-2 rounded-lg text-xs font-bold outline-none focus:border-xmas-red">
-                        
-                        <button @click="addExpense" 
-                                class="w-16 xmas-red text-white py-2 rounded-lg text-xs font-black shadow-md active:scale-95 transition-transform">
-                            ADD
-                        </button>
+                        <input v-model.number="newEx.amount" type="number" placeholder="HKD 金額" class="flex-1 min-w-0 bg-gray-50 border border-gray-100 px-3 py-2 rounded-lg text-xs font-bold outline-none">
+                        <button @click="addExpense" class="w-16 xmas-red text-white py-2 rounded-lg text-xs font-black shadow-md">ADD</button>
                     </div>
                 </div>
             </div>
             <div class="flex-1 overflow-y-auto space-y-2 pb-20 hide-scrollbar">
-                <div v-for="(ex, i) in expenseList" :key="i" class="flex justify-between items-center bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+                <div v-for="(ex, i) in expenseList" :key="i" class="flex justify-between items-center bg-white p-3 rounded-xl shadow-sm border border-gray-100">
                     <div class="flex-1 truncate pr-2">
                         <p class="font-black text-sm text-xmas-green truncate">{{ ex.name }}</p>
-                        <p class="text-[10px] font-bold text-hk-gold">≈ NT$ {{ Math.round(ex.amount * exchangeRate) }}</p>
+                        <p class="text-[9px] font-bold text-hk-gold">≈ NT$ {{ Math.round(ex.amount * exchangeRate) }}</p>
                     </div>
                     <div class="flex items-center space-x-3">
-                        <span class="font-black text-xmas-red text-base">${{ ex.amount }}</span>
+                        <span class="font-black text-xmas-red text-sm">${{ ex.amount }}</span>
                         <button @click="deleteExpense(i)" class="text-gray-200"><i class="fas fa-times-circle text-lg"></i></button>
                     </div>
                 </div>
@@ -193,41 +183,12 @@
         </div>
     </main>
 
-    <button v-if="currentTab === 'itinerary'" @click="showModal = true" class="absolute bottom-24 right-6 w-14 h-14 xmas-red text-white rounded-full shadow-xl flex items-center justify-center z-50 border-2 border-white/30 active:scale-95 transition-transform"><i class="fas fa-plus text-xl"></i></button>
-
-    <div v-if="showModal" class="fixed inset-0 bg-black/70 z-[100] flex items-end justify-center backdrop-blur-sm">
-        <div class="bg-[#FDFCF0] rounded-t-[2rem] w-full p-8 max-h-[85vh] overflow-y-auto border-t-8 border-xmas-red">
-            <h3 class="font-black text-xl mb-6 text-center text-xmas-red italic uppercase border-b-2 border-hk-gold/30 pb-3">New Plan</h3>
-            <div class="space-y-4">
-                <div class="grid grid-cols-2 gap-3">
-                    <input v-model="newItem.time" type="time" class="p-4 bg-white rounded-xl font-bold text-xs border outline-none">
-                    <select v-model="newItem.category" class="p-4 bg-white rounded-xl font-bold text-xs border outline-none text-center">
-                        <option v-for="c in categories" :value="c">{{c}}</option>
-                    </select>
-                </div>
-                <input v-model="newItem.location" placeholder="地點名稱" class="w-full p-4 bg-white rounded-xl font-bold text-xs border outline-none">
-                <input v-model="newItem.mapUrl" placeholder="地址、店名或 Google Maps 連結" class="w-full p-4 bg-white rounded-xl font-bold text-xs border outline-none">
-                <textarea v-model="newItem.note" placeholder="備註..." class="w-full p-4 bg-white rounded-xl font-bold text-xs h-20 border outline-none"></textarea>
-                <div class="border-2 border-dashed border-hk-gold/30 rounded-xl p-6 bg-white text-center relative overflow-hidden">
-                    <input type="file" @change="handleFileUpload" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer">
-                    <div v-if="!newItem.image"><i class="fas fa-camera text-2xl text-hk-gold/40 mb-2"></i><p class="text-[10px] text-gray-400 font-black uppercase">Upload Photo</p></div>
-                    <img v-else :src="newItem.image" class="h-32 w-full object-cover rounded-lg mx-auto">
-                </div>
-            </div>
-            <div class="flex space-x-3 mt-8 pb-4">
-                <button @click="showModal = false" class="flex-1 py-4 text-gray-400 font-black text-xs uppercase">Cancel</button>
-                <button @click="confirmAdd" class="flex-1 py-4 xmas-red text-white font-black rounded-xl text-xs uppercase shadow-lg">Confirm Add</button>
-            </div>
-        </div>
-    </div>
-
     <nav class="bg-white border-t border-gray-100 flex justify-around p-3 pb-8 z-50">
         <button v-for="t in tabs" @click="currentTab = t.id" :class="currentTab === t.id ? 'text-xmas-red scale-125' : 'text-gray-300'"><i :class="t.icon + ' text-xl'"></i></button>
     </nav>
 </div>
 
 <script>
-// --- 重要：替換為你的 Firebase SDK 設定 ---
 const firebaseConfig = {
   apiKey: "AIzaSyCgpe5pVDiX_e7kvgTINptcmqYXtX7V854",
   authDomain: "hongkong-c21fd.firebaseapp.com",
@@ -238,8 +199,6 @@ const firebaseConfig = {
   appId: "1:519310424430:web:73b13ae9d21e12a818297f"
 };
 
-
-// 初始化 Firebase
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
@@ -247,14 +206,16 @@ const { createApp } = Vue;
 createApp({
     data() {
         return {
-            currentTab: 'itinerary', currentDay: 1, showModal: false, syncStatus: false,
-            exchangeRate: 4.12, weatherLoading: true, now: new Date(),
+            currentTab: 'itinerary', currentDay: 1, syncStatus: false,
+            exchangeRate: 4.12, now: new Date(),
             tabs: [{id:'itinerary', name:'行程', icon:'fas fa-compass'}, {id:'list', name:'清單', icon:'fas fa-gift'}, {id:'expense', name:'記帳', icon:'fas fa-coins'}],
-            days: [{id:1, temp:'--', icon:'fas fa-sun'}, {id:2, temp:'--', icon:'fas fa-sun'}, {id:3, temp:'--', icon:'fas fa-sun'}],
-            categories: ['🍱 美食', '🎄 景點', '🚌 交通', '🛍️ 購物', '🏨 飯店'],
+            days: [
+                {id:1, temp:'--', icon:'fas fa-spinner fa-spin', date:'2025-12-25'}, 
+                {id:2, temp:'--', icon:'fas fa-spinner fa-spin', date:'2025-12-26'}, 
+                {id:3, temp:'--', icon:'fas fa-spinner fa-spin', date:'2025-12-27'}
+            ],
             itinerary: [[], [], []], packingList: [], shoppingList: [], expenseList: [],
-            newItemName:'', newShopName:'', newEx:{name:'', amount:null},
-            newItem: {id:null, time:'12:00', location:'', category:'🍱 美食', image:'', note:'', mapUrl:'', gap:''},
+            newItemName: '', newShopItemName: '', newEx:{name:'', amount:null},
             tripStart: new Date('2025-12-25T07:50:00'),
             tripEnd: new Date('2025-12-27T20:45:00')
         }
@@ -275,9 +236,27 @@ createApp({
         }
     },
     methods: {
-        // --- Firebase 同步邏輯 ---
+        async fetchWeather() {
+            try {
+                // 抓取香港維多利亞港座標的天氣
+                const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=22.2855&longitude=114.1577&daily=weathercode,temperature_2m_max&timezone=Asia%2FHong_Kong');
+                const data = await res.json();
+                const iconMap = (code) => {
+                    if (code <= 1) return 'fas fa-sun';
+                    if (code <= 3) return 'fas fa-cloud-sun';
+                    if (code <= 48) return 'fas fa-cloud';
+                    return 'fas fa-cloud-showers-heavy';
+                };
+                // 將 API 資料填入 days 陣列
+                for(let i=0; i<3; i++) {
+                    this.days[i].temp = Math.round(data.daily.temperature_2m_max[i]);
+                    this.days[i].icon = iconMap(data.daily.weathercode[i]);
+                }
+            } catch (e) {
+                console.error("天氣抓取失敗", e);
+            }
+        },
         initSync() {
-            // 監聽雲端資料庫變化
             db.ref('trip_data').on('value', (snapshot) => {
                 const data = snapshot.val();
                 if (data) {
@@ -286,78 +265,45 @@ createApp({
                     this.shoppingList = data.shoppingList || [];
                     this.expenseList = data.expenseList || [];
                 }
-                this.syncStatus = true; // 連線成功
-            }, (error) => {
-                console.error("Firebase 連線失敗:", error);
-                this.syncStatus = false;
+                this.syncStatus = true;
             });
         },
         saveData() {
-            // 寫入雲端資料庫
             db.ref('trip_data').set({
                 itinerary: this.itinerary,
                 packingList: this.packingList,
                 shoppingList: this.shoppingList,
                 expenseList: this.expenseList
-            }).then(() => {
-                console.log("資料已同步到雲端");
-            }).catch((err) => {
-                console.error("同步失敗:", err);
             });
         },
-        // --- 業務邏輯 ---
-        async fetchWeather() {
-            try {
-                const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=22.2783&longitude=114.1747&daily=weathercode,temperature_2m_max&timezone=Asia%2FHong_Kong');
-                const data = await res.json();
-                const map = (c) => c <= 3 ? 'fas fa-sun' : c <= 48 ? 'fas fa-cloud' : c <= 67 ? 'fas fa-cloud-rain' : 'fas fa-snowflake';
-                for(let i=0; i<3; i++) { this.days[i].temp = Math.round(data.daily.temperature_2m_max[i]); this.days[i].icon = map(data.daily.weathercode[i]); }
-            } catch (e) {}
-        },
-        async fetchExchangeRate() {
-            try {
-                const res = await fetch('https://api.frankfurter.app/latest?from=HKD&to=TWD');
-                const data = await res.json();
-                if (data.rates.TWD) this.exchangeRate = data.rates.TWD.toFixed(2);
-            } catch (e) {}
-        },
-        getMapLink(input) { return input.startsWith('http') ? input : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(input)}`; },
         addItem(type) {
-            if(type==='packing' && this.newItemName) this.packingList.push({text:this.newItemName, done:false});
-            if(type==='shopping' && this.newShopName) this.shoppingList.push({text:this.newShopName, done:false});
-            this.newItemName = this.newShopName = ''; this.saveData();
+            if(type === 'packing' && this.newItemName) {
+                this.packingList.push({text: this.newItemName, done: false});
+                this.newItemName = '';
+            } else if(type === 'shopping' && this.newShopItemName) {
+                this.shoppingList.push({text: this.newShopItemName, done: false});
+                this.newShopItemName = '';
+            }
+            this.saveData();
         },
         deleteListItem(type, idx) {
-            if(type==='packing') this.packingList.splice(idx, 1);
+            if(type === 'packing') this.packingList.splice(idx, 1);
             else this.shoppingList.splice(idx, 1);
             this.saveData();
         },
-        handleFileUpload(e) {
-            const file = e.target.files[0]; if (!file) return;
-            // 注意：Firebase Realtime Database 儲存 Base64 圖片有大小限制(約10MB)
-            const reader = new FileReader();
-            reader.onload = (ev) => { this.newItem.image = ev.target.result; };
-            reader.readAsDataURL(file);
+        getMapLink(input) { return input.startsWith('http') ? input : `https://www.google.com/maps/search/${encodeURIComponent(input)}`; },
+        addExpense() { 
+            if (this.newEx.name && this.newEx.amount) { 
+                this.expenseList.push({...this.newEx}); 
+                this.newEx={name:'', amount:null}; 
+                this.saveData(); 
+            } 
         },
-        confirmAdd() {
-            this.itinerary[this.currentDay-1].push({...this.newItem, id: Date.now()});
-            this.newItem = {id:null, time:'12:00', location:'', category:'🍱 美食', image:'', note:'', mapUrl:'', gap:''};
-            this.saveData(); this.showModal = false;
-        },
-        moveItem(idx, dir) {
-            const list = this.itinerary[this.currentDay-1];
-            const target = idx + dir;
-            if (target >= 0 && target < list.length) { [list[idx], list[target]] = [list[target], list[idx]]; this.saveData(); }
-        },
-        editGap(item) { const val = prompt('設定交通時間/備註:', item.gap); if (val !== null) { item.gap = val; this.saveData(); } },
-        deleteItem(idx) { if(confirm('確定刪除？')) { this.itinerary[this.currentDay-1].splice(idx, 1); this.saveData(); } },
-        addExpense() { if (this.newEx.name && this.newEx.amount) { this.expenseList.push({...this.newEx}); this.newEx={name:'', amount:null}; this.saveData(); } },
         deleteExpense(i) { this.expenseList.splice(i, 1); this.saveData(); }
     },
     mounted() { 
-        this.initSync(); // 改為啟動雲端同步
-        this.fetchWeather(); 
-        this.fetchExchangeRate();
+        this.initSync();
+        this.fetchWeather();
         setInterval(() => { this.now = new Date(); }, 1000);
     }
 }).mount('#app');
