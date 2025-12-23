@@ -17,15 +17,19 @@
     <style>
         :root { --xmas-red: #A61B1B; --xmas-green: #044A05; --hk-gold: #D4AF37; --bg-cream: #FDFCF0; }
         body { background-color: var(--bg-cream); font-family: 'Noto Sans TC', sans-serif; color: #1F2937; overflow-x: hidden; height: 100vh; }
-        .header-bg { background-image: linear-gradient(to bottom, rgba(166, 27, 27,0.4), rgba(166, 27, 27, 0.7)), url('./images/bg.jpeg'); background-size: cover; background-position: center; border-bottom: 3px solid var(--hk-gold); }
+        .header-bg { background-image: linear-gradient(to bottom, rgba(166, 27, 27,0.4), rgba(166, 27, 27, 0.7)), url('./images/bg.jpeg'); background-size: cover; background-position: center; border-bottom: 2px solid var(--hk-gold); }
+        
+        /* 調整後的標題大小 */
         .brand-text {
             font-family: 'Cormorant Garamond', serif;
-            font-size: 3.5rem;
+            font-size: 2.2rem; /* 從 3.5rem 縮小 */
             font-weight: 900;
             letter-spacing: 1px;
             color: #FFFFFF; 
-            text-shadow: 0 0 7px #fff, 0 0 15px var(--hk-gold), 0 0 30px var(--hk-gold), 0 0 50px var(--xmas-red), 3px 4px 8px rgba(0,0,0,0.6);
+            text-shadow: 0 0 5px #fff, 0 0 10px var(--hk-gold), 0 0 20px var(--xmas-red);
+            line-height: 1;
         }
+        
         .xmas-red { background-color: var(--xmas-red); }
         .xmas-green { background-color: var(--xmas-green); }
         .text-xmas-red { color: var(--xmas-red); }
@@ -51,78 +55,80 @@
 
     <div v-for="n in 12" :key="n" class="snowflake" :style="{left: Math.random()*100+'%', animationDuration: (Math.random()*10+5)+'s', animationDelay: Math.random()*5+'s', top: '-20px'}">❄</div>
 
-    <header class="header-bg text-white px-6 pt-12 pb-5 z-30 shadow-lg relative">
-        <h1 class="brand-text">HONG KONG</h1>
-        <div class="flex items-center space-x-2 opacity-80 mt-1">
-            <span class="w-6 h-[1px] bg-hk-gold"></span>
-            <p class="text-[9px] font-black uppercase tracking-widest">January , 2026</p>
+    <header class="header-bg text-white px-6 pt-8 pb-3 z-30 shadow-lg relative">
+        <div class="flex items-baseline justify-between">
+            <h1 class="brand-text">HONG KONG</h1>
+            <div class="flex items-center space-x-2 opacity-80">
+                <span class="w-4 h-[1px] bg-hk-gold"></span>
+                <p class="text-[8px] font-black uppercase tracking-widest">JAN 2026</p>
+            </div>
         </div>
     </header>
 
     <main class="flex-1 overflow-y-auto hide-scrollbar p-4 relative z-10 pb-24">
         
         <div v-if="currentTab === 'itinerary'">
-            <div class="flex mb-5 items-center justify-between">
+            <div class="flex mb-4 items-center justify-between">
                 <div class="flex space-x-1">
                     <button v-for="d in days" @click="currentDay = d.id" 
                         :class="currentDay === d.id ? 'xmas-red text-white shadow-md' : 'bg-white text-gray-400 border'"
-                        class="py-2 px-3 rounded-lg text-[10px] font-black transition-all">DAY {{ d.id }}</button>
+                        class="py-1.5 px-3 rounded-lg text-[10px] font-black transition-all">DAY {{ d.id }}</button>
                 </div>
-                <div class="flex items-center space-x-2 bg-white px-3 py-1.5 rounded-full border border-hk-gold/30 shadow-sm">
-                    <i :class="days[currentDay-1].icon" class="text-hk-gold text-sm"></i>
-                    <span class="text-xs font-black text-xmas-green">{{ days[currentDay-1].temp }}°C</span>
+                <div class="flex items-center space-x-2 bg-white px-3 py-1 rounded-full border border-hk-gold/30 shadow-sm">
+                    <i :class="days[currentDay-1].icon" class="text-hk-gold text-xs"></i>
+                    <span class="text-[10px] font-black text-xmas-green">{{ days[currentDay-1].temp }}°C</span>
                 </div>
             </div>
 
-            <div v-if="currentDay === 1 || currentDay === 3" class="ticket-stub p-5 mb-8 mx-1">
-                <div class="flex justify-between items-center border-b-2 border-dashed border-hk-gold/30 pb-2 mb-4 text-[10px] font-black text-xmas-red italic">
+            <div v-if="currentDay === 1 || currentDay === 3" class="ticket-stub p-4 mb-6 mx-1">
+                <div class="flex justify-between items-center border-b border-dashed border-hk-gold/30 pb-2 mb-3 text-[9px] font-black text-xmas-red italic">
                     <span>FLIGHT PASS</span>
                     <span class="text-hk-gold uppercase">{{ currentDay === 1 ? 'Go to HK' : 'Return Home' }}</span>
                 </div>
-                <div class="flex justify-between items-center">
+                <div class="flex justify-between items-center px-2">
                     <div class="text-center">
-                        <p class="text-4xl font-black text-xmas-red leading-none">{{ currentDay === 1 ? 'KHH' : 'HKG' }}</p>
-                        <p class="text-sm font-black text-xmas-green mt-2">{{ currentDay === 1 ? '07:50' : '20:45' }}</p>
+                        <p class="text-3xl font-black text-xmas-red leading-none">{{ currentDay === 1 ? 'KHH' : 'HKG' }}</p>
+                        <p class="text-xs font-black text-xmas-green mt-1">{{ currentDay === 1 ? '07:50' : '20:45' }}</p>
                     </div>
-                    <div class="flex-1 border-t-2 border-hk-gold/40 border-dotted relative mx-4"><i class="fas fa-sleigh text-hk-gold absolute -top-3 left-1/2 -translate-x-1/2 text-2xl"></i></div>
+                    <div class="flex-1 border-t-2 border-hk-gold/40 border-dotted relative mx-4"><i class="fas fa-sleigh text-hk-gold absolute -top-3 left-1/2 -translate-x-1/2 text-xl"></i></div>
                     <div class="text-center">
-                        <p class="text-4xl font-black text-xmas-red leading-none">{{ currentDay === 1 ? 'HKG' : 'KHH' }}</p>
-                        <p class="text-sm font-black text-xmas-green mt-2">{{ currentDay === 1 ? '09:30' : '22:15' }}</p>
+                        <p class="text-3xl font-black text-xmas-red leading-none">{{ currentDay === 1 ? 'HKG' : 'KHH' }}</p>
+                        <p class="text-xs font-black text-xmas-green mt-1">{{ currentDay === 1 ? '09:30' : '22:15' }}</p>
                     </div>
                 </div>
             </div>
 
-            <div class="relative pl-16">
-                <div v-if="currentDayItems.length > 0" class="timeline-path"></div>
+            <div class="relative pl-14">
+                <div v-if="currentDayItems.length > 0" class="timeline-path" style="left: 54px;"></div>
                 <div v-for="(item, index) in currentDayItems" :key="index">
-                    <div v-if="index > 0" class="relative -left-10 mb-6 flex items-center z-20">
-                        <div class="bg-white/80 backdrop-blur-sm border border-hk-gold/40 px-3 py-1 rounded-full shadow-sm flex items-center space-x-2">
-                            <i class="fas fa-route text-hk-gold text-[10px]"></i>
-                            <input v-model="item.gapInfo" @change="saveData" placeholder="輸入交通時間" class="bg-transparent border-none outline-none text-[10px] font-bold text-hk-gold w-32">
+                    <div v-if="index > 0" class="relative -left-8 mb-4 flex items-center z-20">
+                        <div class="bg-white/90 backdrop-blur-sm border border-hk-gold/30 px-2 py-0.5 rounded-full shadow-sm flex items-center space-x-2">
+                            <i class="fas fa-route text-hk-gold text-[8px]"></i>
+                            <input v-model="item.gapInfo" @change="saveData" placeholder="輸入交通時間" class="bg-transparent border-none outline-none text-[9px] font-bold text-hk-gold w-24">
                         </div>
                     </div>
 
-                    <div class="mb-10 relative">
-                        <div class="absolute -left-16 top-1 w-12 text-right text-[11px] font-black text-xmas-green">{{ item.time }}</div>
+                    <div class="mb-8 relative">
+                        <div class="absolute -left-14 top-1 w-10 text-right text-[10px] font-black text-xmas-green">{{ item.time }}</div>
                         <div class="absolute -left-[11px] top-1.5 w-3 h-3 rounded-full bg-xmas-red z-10 border-2 border-white"></div>
-                        <div class="bg-white rounded-xl overflow-hidden shadow-md border-b-4 border-xmas-green p-3">
-                            <img v-if="item.image" :src="item.image" class="w-full h-40 object-cover rounded-lg mb-3">
+                        <div class="bg-white rounded-xl overflow-hidden shadow-sm border-b-4 border-xmas-green p-3">
+                            <img v-if="item.image" :src="item.image" class="w-full h-36 object-cover rounded-lg mb-2">
                             <div class="flex flex-col">
-                                <div class="flex justify-between items-start mb-2">
+                                <div class="flex justify-between items-start mb-1">
                                     <div class="flex-1">
-                                        <span v-if="item.tag" class="text-[8px] bg-hk-gold/10 text-hk-gold px-2 py-0.5 rounded-full font-black uppercase mb-1 inline-block">{{ item.tag }}</span>
-                                        <h3 class="font-black text-sm text-xmas-green leading-tight">{{ item.location }}</h3>
+                                        <span v-if="item.tag" class="text-[7px] bg-hk-gold/10 text-hk-gold px-1.5 py-0.5 rounded-full font-black uppercase mb-1 inline-block">{{ item.tag }}</span>
+                                        <h3 class="font-black text-xs text-xmas-green leading-tight">{{ item.location }}</h3>
                                     </div>
                                 </div>
-                                <p v-if="item.note" class="text-[10px] text-gray-400 mb-4 italic border-l-2 border-hk-gold pl-2">{{ item.note }}</p>
+                                <p v-if="item.note" class="text-[9px] text-gray-400 mb-2 italic border-l-2 border-hk-gold pl-2">{{ item.note }}</p>
                                 <div class="flex justify-between items-center mt-1 pt-2 border-t border-gray-50">
                                     <div class="flex space-x-1">
-                                        <a v-if="item.mapUrl" :href="item.mapUrl" target="_blank" class="bg-blue-50 text-blue-500 p-2 rounded-lg flex items-center justify-center"><i class="fas fa-map-marked-alt text-xs"></i></a>
-                                        <button @click="editItem(index)" class="bg-amber-50 text-amber-500 p-2 rounded-lg flex items-center justify-center"><i class="fas fa-edit text-[10px]"></i></button>
-                                        <button @click="moveItem(index, -1)" class="bg-gray-50 text-gray-400 p-2 rounded-lg flex items-center justify-center"><i class="fas fa-chevron-up text-[10px]"></i></button>
-                                        <button @click="moveItem(index, 1)" class="bg-gray-50 text-gray-400 p-2 rounded-lg flex items-center justify-center"><i class="fas fa-chevron-down text-[10px]"></i></button>
+                                        <a v-if="item.mapUrl" :href="item.mapUrl" target="_blank" class="bg-blue-50 text-blue-500 p-1.5 rounded flex items-center justify-center"><i class="fas fa-map-marked-alt text-[10px]"></i></a>
+                                        <button @click="editItem(index)" class="bg-amber-50 text-amber-500 p-1.5 rounded flex items-center justify-center"><i class="fas fa-edit text-[10px]"></i></button>
+                                        <button @click="moveItem(index, -1)" class="bg-gray-50 text-gray-400 p-1.5 rounded flex items-center justify-center"><i class="fas fa-chevron-up text-[10px]"></i></button>
+                                        <button @click="moveItem(index, 1)" class="bg-gray-50 text-gray-400 p-1.5 rounded flex items-center justify-center"><i class="fas fa-chevron-down text-[10px]"></i></button>
                                     </div>
-                                    <button @click="deleteItem(index)" class="bg-red-50 text-red-500 p-2 rounded-lg flex items-center justify-center"><i class="fas fa-trash text-[10px]"></i></button>
+                                    <button @click="deleteItem(index)" class="bg-red-50 text-red-500 p-1.5 rounded flex items-center justify-center"><i class="fas fa-trash text-[10px]"></i></button>
                                 </div>
                             </div>
                         </div>
@@ -131,89 +137,86 @@
             </div>
         </div>
 
-        <div v-if="currentTab === 'list'" class="space-y-6">
-            <div class="bg-white rounded-3xl shadow-xl overflow-hidden border-t-4 border-xmas-red">
-                <div class="xmas-red p-4 flex justify-between items-center text-white"><h2 class="font-black italic tracking-widest text-sm uppercase"><i class="fas fa-suitcase-rolling mr-2"></i>Packing List</h2></div>
-                <div class="p-4 space-y-2">
-                    <div v-for="(item, idx) in packingList" :key="idx" @click="item.done = !item.done; saveData()" class="flex items-center justify-between p-3 rounded-xl border transition-all cursor-pointer" :class="item.done ? 'bg-gray-50 opacity-50' : 'bg-white border-hk-gold/10'"><div class="flex items-center space-x-3"><i :class="item.done ? 'fa-check-circle text-green-500' : 'fa-circle text-gray-200'" class="far"></i><span class="text-xs font-bold">{{ item.text }}</span></div><button @click.stop="deleteListItem('packing', idx)" class="text-gray-200 hover:text-red-400"><i class="fas fa-trash-alt"></i></button></div>
-                    <div class="flex mt-4 bg-gray-50 rounded-xl p-1"><input v-model="newItemName" placeholder="新增行李..." class="flex-1 bg-transparent p-3 text-xs outline-none font-bold"><button @click="addItem('packing')" class="xmas-red text-white px-5 rounded-lg font-black text-xs">+</button></div>
+        <div v-if="currentTab === 'list'" class="space-y-4">
+            <div class="bg-white rounded-2xl shadow-md overflow-hidden border-t-4 border-xmas-red">
+                <div class="xmas-red p-3 flex justify-between items-center text-white"><h2 class="font-black italic text-xs uppercase tracking-widest"><i class="fas fa-suitcase-rolling mr-2"></i>Packing</h2></div>
+                <div class="p-3 space-y-1.5">
+                    <div v-for="(item, idx) in packingList" :key="idx" @click="item.done = !item.done; saveData()" class="flex items-center justify-between p-2 rounded-lg border transition-all text-xs" :class="item.done ? 'bg-gray-50 opacity-50' : 'bg-white border-hk-gold/10'"><div class="flex items-center space-x-2"><i :class="item.done ? 'fa-check-circle text-green-500' : 'fa-circle text-gray-200'" class="far"></i><span class="font-bold">{{ item.text }}</span></div><button @click.stop="deleteListItem('packing', idx)" class="text-gray-200"><i class="fas fa-trash-alt text-[10px]"></i></button></div>
+                    <div class="flex mt-2 bg-gray-50 rounded-lg p-1"><input v-model="newItemName" placeholder="新增行李..." class="flex-1 bg-transparent p-2 text-xs outline-none font-bold"><button @click="addItem('packing')" class="xmas-red text-white px-4 rounded-md font-black text-xs">+</button></div>
                 </div>
             </div>
-            <div class="bg-white rounded-3xl shadow-xl overflow-hidden border-t-4 border-xmas-green">
-                <div class="xmas-green p-4 text-white"><h2 class="font-black italic tracking-widest text-sm uppercase"><i class="fas fa-gift mr-2"></i>Shopping List</h2></div>
-                <div class="p-4 space-y-2">
-                    <div v-for="(item, idx) in shoppingList" :key="idx" @click="item.done = !item.done; saveData()" class="flex items-center justify-between p-3 rounded-xl border border-hk-gold/10 bg-white shadow-sm" :class="item.done ? 'opacity-50' : ''"><div class="flex items-center space-x-3"><i :class="item.done ? 'fa-check-square text-hk-gold' : 'fa-square text-gray-200'" class="far"></i><span class="text-xs font-bold">{{ item.text }}</span></div><button @click.stop="deleteListItem('shopping', idx)" class="text-gray-200 hover:text-red-400"><i class="fas fa-trash-alt"></i></button></div>
-                    <div class="flex mt-4 bg-gray-50 rounded-xl p-1"><input v-model="newShopItemName" placeholder="想買什麼呢？" class="flex-1 bg-transparent p-3 text-xs outline-none font-bold"><button @click="addItem('shopping')" class="xmas-green text-white px-5 rounded-lg font-black text-xs">+</button></div>
+            <div class="bg-white rounded-2xl shadow-md overflow-hidden border-t-4 border-xmas-green">
+                <div class="xmas-green p-3 text-white"><h2 class="font-black italic text-xs uppercase tracking-widest"><i class="fas fa-gift mr-2"></i>Shopping</h2></div>
+                <div class="p-3 space-y-1.5">
+                    <div v-for="(item, idx) in shoppingList" :key="idx" @click="item.done = !item.done; saveData()" class="flex items-center justify-between p-2 rounded-lg border border-hk-gold/10 bg-white shadow-sm text-xs" :class="item.done ? 'opacity-50' : ''"><div class="flex items-center space-x-2"><i :class="item.done ? 'fa-check-square text-hk-gold' : 'fa-square text-gray-200'" class="far"></i><span class="font-bold">{{ item.text }}</span></div><button @click.stop="deleteListItem('shopping', idx)" class="text-gray-200"><i class="fas fa-trash-alt text-[10px]"></i></button></div>
+                    <div class="flex mt-2 bg-gray-50 rounded-lg p-1"><input v-model="newShopItemName" placeholder="想買什麼？" class="flex-1 bg-transparent p-2 text-xs outline-none font-bold"><button @click="addItem('shopping')" class="xmas-green text-white px-4 rounded-md font-black text-xs">+</button></div>
                 </div>
             </div>
         </div>
 
         <div v-if="currentTab === 'expense'" class="flex flex-col h-full space-y-4">
-            <div class="bg-white p-5 rounded-2xl shadow-lg border-2 border-hk-gold/30 text-center relative mx-1">
-                <div class="text-[9px] font-black text-hk-gold mb-1 uppercase tracking-widest"><i class="fas fa-sync-alt fa-spin mr-1" v-if="!rateLoaded"></i>Live Rate: 1 HKD ≈ {{ exchangeRate }} TWD</div>
-                <p class="text-[10px] font-black text-gray-400 mb-1">TOTAL EXPENSE</p>
-                <p class="text-3xl font-black text-xmas-red mb-4">NT$ {{ Math.round(totalExpense * exchangeRate).toLocaleString() }}</p>
-                <div class="space-y-2"><input v-model="newEx.name" placeholder="項目名稱" class="w-full bg-gray-50 border border-gray-200 p-3 rounded-xl text-xs font-bold outline-none"><div class="flex space-x-2"><input v-model.number="newEx.amount" type="number" placeholder="HKD" class="w-1/2 bg-gray-50 border border-gray-200 p-3 rounded-xl text-xs font-bold outline-none"><button @click="addExpense" class="w-1/2 xmas-red text-white py-3 rounded-xl text-xs font-black shadow-md">ADD</button></div></div>
+            <div class="bg-white p-4 rounded-2xl shadow-lg border-2 border-hk-gold/30 text-center relative mx-1">
+                <div class="text-[8px] font-black text-hk-gold mb-1 uppercase tracking-widest">1 HKD ≈ {{ exchangeRate }} TWD</div>
+                <p class="text-[9px] font-black text-gray-400 mb-1">TOTAL EXPENSE</p>
+                <p class="text-2xl font-black text-xmas-red mb-3">NT$ {{ Math.round(totalExpense * exchangeRate).toLocaleString() }}</p>
+                <div class="space-y-2"><input v-model="newEx.name" placeholder="項目名稱" class="w-full bg-gray-50 border border-gray-200 p-2.5 rounded-xl text-xs font-bold outline-none"><div class="flex space-x-2"><input v-model.number="newEx.amount" type="number" placeholder="HKD" class="w-1/2 bg-gray-50 border border-gray-200 p-2.5 rounded-xl text-xs font-bold outline-none"><button @click="addExpense" class="w-1/2 xmas-red text-white py-2.5 rounded-xl text-xs font-black shadow-md">ADD</button></div></div>
             </div>
             <div class="flex-1 overflow-y-auto space-y-2 pb-24 hide-scrollbar px-1">
-                <div v-for="(ex, i) in expenseList" :key="i" class="flex items-center bg-white p-4 rounded-xl shadow-sm border border-gray-100"><div class="flex-1 min-w-0 pr-3"><p class="font-black text-sm text-xmas-green truncate">{{ ex.name }}</p><p class="text-[9px] font-bold text-hk-gold">≈ NT$ {{ Math.round(ex.amount * exchangeRate).toLocaleString() }}</p></div><div class="flex items-center space-x-2 shrink-0"><span class="font-black text-xmas-red text-sm">${{ ex.amount }}</span><button @click="deleteExpense(i)" class="text-gray-300 active:text-red-500 p-1"><i class="fas fa-times-circle text-lg"></i></button></div></div>
+                <div v-for="(ex, i) in expenseList" :key="i" class="flex items-center bg-white p-3 rounded-xl shadow-sm border border-gray-100"><div class="flex-1 min-w-0 pr-2"><p class="font-black text-xs text-xmas-green truncate">{{ ex.name }}</p><p class="text-[8px] font-bold text-hk-gold">≈ NT$ {{ Math.round(ex.amount * exchangeRate).toLocaleString() }}</p></div><div class="flex items-center space-x-2 shrink-0"><span class="font-black text-xmas-red text-xs">${{ ex.amount }}</span><button @click="deleteExpense(i)" class="text-gray-300 p-1"><i class="fas fa-times-circle text-base"></i></button></div></div>
             </div>
         </div>
     </main>
 
-    <button v-if="currentTab === 'itinerary'" @click="openAddModal" class="fixed bottom-32 right-6 w-14 h-14 xmas-red text-white rounded-full shadow-2xl z-[60] flex items-center justify-center border-4 border-white active:scale-95 transition-all"><i class="fas fa-plus text-xl"></i></button>
+    <button v-if="currentTab === 'itinerary'" @click="openAddModal" class="fixed bottom-28 right-6 w-12 h-12 xmas-red text-white rounded-full shadow-2xl z-[60] flex items-center justify-center border-2 border-white active:scale-95 transition-all"><i class="fas fa-plus text-lg"></i></button>
 
     <transition name="modal">
         <div v-if="showModal" class="fixed inset-0 z-[100] flex items-end md:items-center justify-center p-0 md:p-6">
             <div class="absolute inset-0 bg-black/60 backdrop-blur-md" @click="closeModal"></div>
-            <div class="bg-white w-full max-w-lg rounded-t-[40px] md:rounded-[40px] shadow-2xl z-10 overflow-hidden border-t-8 border-xmas-red flex flex-col max-h-[80vh] mb-[80px] md:mb-0">
-                <div class="p-8 overflow-y-auto space-y-6 hide-scrollbar relative">
-                    <div class="flex justify-between items-center border-b border-gray-100 pb-4">
-                        <div>
-                            <h2 class="font-black text-xmas-red italic uppercase tracking-widest text-xl leading-none">{{ editingIndex === null ? 'Add Spot' : 'Edit Spot' }}</h2>
-                            <p class="text-[9px] text-gray-400 font-black mt-1 uppercase tracking-tighter">Capture the magic of Hong Kong</p>
-                        </div>
-                        <button @click="closeModal" class="text-gray-300"><i class="fas fa-times-circle text-2xl"></i></button>
+            <div class="bg-white w-full max-w-lg rounded-t-[30px] md:rounded-[30px] shadow-2xl z-10 overflow-hidden border-t-8 border-xmas-red flex flex-col max-h-[85vh] mb-[70px] md:mb-0">
+                <div class="p-6 overflow-y-auto space-y-4 hide-scrollbar relative">
+                    <div class="flex justify-between items-center border-b border-gray-100 pb-3">
+                        <h2 class="font-black text-xmas-red italic uppercase tracking-widest text-lg">{{ editingIndex === null ? 'Add Spot' : 'Edit Spot' }}</h2>
+                        <button @click="closeModal" class="text-gray-300"><i class="fas fa-times-circle text-xl"></i></button>
                     </div>
                     
-                    <div class="group relative aspect-video bg-gray-50 rounded-3xl border-2 border-dashed border-gray-200 flex items-center justify-center overflow-hidden transition-all hover:border-hk-gold">
+                    <div class="group relative aspect-video bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200 flex items-center justify-center overflow-hidden transition-all">
                         <div v-if="isCropping" class="w-full h-full relative crop-container bg-black z-20">
                             <img ref="cropImg" :src="tempImageSrc" class="max-w-full">
                             <div class="absolute bottom-4 right-4 flex space-x-2 z-30">
-                                <button @click.stop="cancelCrop" class="bg-white/20 backdrop-blur-md text-white w-10 h-10 rounded-full flex items-center justify-center border border-white/50"><i class="fas fa-times"></i></button>
-                                <button @click.stop="confirmCrop" class="bg-xmas-red text-white w-10 h-10 rounded-full flex items-center justify-center shadow-lg border-2 border-white"><i class="fas fa-check"></i></button>
+                                <button @click.stop="cancelCrop" class="bg-white/20 backdrop-blur-md text-white w-9 h-9 rounded-full flex items-center justify-center border border-white/50"><i class="fas fa-times"></i></button>
+                                <button @click.stop="confirmCrop" class="bg-xmas-red text-white w-9 h-9 rounded-full flex items-center justify-center shadow-lg border-2 border-white"><i class="fas fa-check"></i></button>
                             </div>
                         </div>
                         <template v-else>
                             <img v-if="newItem.image" :src="newItem.image" class="w-full h-full object-cover z-10">
                             <div v-else class="text-center text-gray-300 z-0">
-                                <div class="w-12 h-12 bg-white rounded-full shadow-md flex items-center justify-center mx-auto mb-2 text-xmas-red"><i class="fas fa-camera text-xl"></i></div>
-                                <p class="text-[10px] font-black uppercase tracking-widest">Tap to Upload & Crop</p>
+                                <div class="w-10 h-10 bg-white rounded-full shadow-md flex items-center justify-center mx-auto mb-2 text-xmas-red"><i class="fas fa-camera text-base"></i></div>
+                                <p class="text-[9px] font-black uppercase tracking-widest">Tap to Upload & Crop</p>
                             </div>
                             <input type="file" @change="handleImageUpload" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer z-20">
                         </template>
                     </div>
 
-                    <div class="grid grid-cols-3 gap-4">
-                        <div class="col-span-1"><label class="text-[10px] font-black text-hk-gold block mb-1">Time</label><input v-model="newItem.time" type="time" class="w-full bg-gray-50 p-3 rounded-2xl text-xs font-black"></div>
-                        <div class="col-span-2"><label class="text-[10px] font-black text-hk-gold block mb-1">Location Name</label><input v-model="newItem.location" placeholder="要去哪裡？" class="w-full bg-gray-50 p-3 rounded-2xl text-xs font-black"></div>
+                    <div class="grid grid-cols-3 gap-3">
+                        <div class="col-span-1"><label class="text-[9px] font-black text-hk-gold block mb-1">Time</label><input v-model="newItem.time" type="time" class="w-full bg-gray-50 p-2.5 rounded-xl text-xs font-black border-none"></div>
+                        <div class="col-span-2"><label class="text-[9px] font-black text-hk-gold block mb-1">Location Name</label><input v-model="newItem.location" placeholder="要去哪裡？" class="w-full bg-gray-50 p-2.5 rounded-xl text-xs font-black border-none"></div>
                     </div>
-                    <div class="space-y-4 bg-gray-50/50 p-4 rounded-3xl">
-                        <input v-model="newItem.mapUrl" placeholder="Google Map 連結..." class="w-full bg-white p-3 rounded-2xl text-[10px] font-bold border-none shadow-sm">
-                        <div class="flex flex-wrap gap-2"><button v-for="tag in ['📸 景點', '🍽️ 美食', '🛍️ 購物', '🚌 交通','🏠 住宿']" @click="newItem.tag = tag" :class="newItem.tag === tag ? 'xmas-green text-white' : 'bg-white text-gray-400 border'" class="px-4 py-2 rounded-full text-[10px] font-black">{{ tag }}</button></div>
+                    <div class="space-y-3 bg-gray-50/50 p-3 rounded-2xl">
+                        <input v-model="newItem.mapUrl" placeholder="Google Map 連結..." class="w-full bg-white p-2.5 rounded-xl text-[10px] font-bold border-none shadow-sm">
+                        <div class="flex flex-wrap gap-1.5"><button v-for="tag in ['📸 景點', '🍽️ 美食', '🛍️ 購物', '🚌 交通','🏠 住宿']" @click="newItem.tag = tag" :class="newItem.tag === tag ? 'xmas-green text-white' : 'bg-white text-gray-400 border'" class="px-3 py-1.5 rounded-full text-[9px] font-black">{{ tag }}</button></div>
                     </div>
-                    <textarea v-model="newItem.note" rows="3" placeholder="備註..." class="w-full bg-gray-50 p-4 rounded-2xl text-xs font-bold border-none outline-none"></textarea>
+                    <textarea v-model="newItem.note" rows="2" placeholder="備註..." class="w-full bg-gray-50 p-3 rounded-xl text-xs font-bold border-none outline-none"></textarea>
                 </div>
-                <div class="p-6 bg-gray-50 flex space-x-4 border-t border-gray-100">
-                    <button @click="closeModal" class="flex-1 py-4 font-black text-gray-400 text-[10px] uppercase">Discard</button>
-                    <button @click="addItineraryItem" class="flex-[2] xmas-red text-white py-4 rounded-2xl font-black text-xs uppercase shadow-xl">{{ editingIndex === null ? 'Save To Itinerary' : 'Update Spot' }}</button>
+                <div class="p-4 bg-gray-50 flex space-x-3 border-t border-gray-100">
+                    <button @click="closeModal" class="flex-1 py-3 font-black text-gray-400 text-[10px] uppercase">Discard</button>
+                    <button @click="addItineraryItem" class="flex-[2] xmas-red text-white py-3 rounded-xl font-black text-xs uppercase shadow-xl">{{ editingIndex === null ? 'Save' : 'Update' }}</button>
                 </div>
             </div>
         </div>
     </transition>
 
-    <nav class="fixed bottom-0 left-0 w-full bg-white/90 backdrop-blur-md border-t border-gray-100 flex justify-around p-3 pb-8 z-[100]">
-        <button v-for="t in tabs" @click="currentTab = t.id" :class="currentTab === t.id ? 'text-xmas-red scale-110' : 'text-[var(--xmas-green)]'" class="flex flex-col items-center space-y-1 transition-all"><i :class="t.icon" class="text-xl"></i><span class="text-[8px] font-black uppercase tracking-tighter">{{ t.name }}</span></button>
+    <nav class="fixed bottom-0 left-0 w-full bg-white/95 backdrop-blur-md border-t border-gray-100 flex justify-around p-2 pb-6 z-[100]">
+        <button v-for="t in tabs" @click="currentTab = t.id" :class="currentTab === t.id ? 'text-xmas-red scale-110' : 'text-[var(--xmas-green)]'" class="flex flex-col items-center space-y-1 transition-all"><i :class="t.icon" class="text-lg"></i><span class="text-[8px] font-black uppercase tracking-tighter">{{ t.name }}</span></button>
     </nav>
 </div>
 
@@ -244,51 +247,33 @@ createApp({
         openAddModal() { this.editingIndex = null; this.newItem = {time: '12:00', location: '', image: '', mapUrl: '', tag: '📸 景點', note: '', gapInfo: ''}; this.showModal = true; },
         editItem(idx) { this.editingIndex = idx; const item = this.currentDayItems[idx]; this.newItem = { ...item }; this.showModal = true; },
         closeModal() { this.showModal = false; this.editingIndex = null; this.cancelCrop(); },
-        
-        // 修正後的 addItineraryItem：確保目標陣列存在
         addItineraryItem() { 
             if(!this.newItem.location) return; 
             const dayIdx = this.currentDay - 1;
-            // 如果該天還沒被初始化，手動補上空陣列
-            if (!this.itinerary[dayIdx]) {
-                this.itinerary[dayIdx] = [];
-            }
-            if(this.editingIndex !== null) { 
-                this.itinerary[dayIdx][this.editingIndex] = {...this.newItem}; 
-            } else { 
-                this.itinerary[dayIdx].push({...this.newItem}); 
-            } 
-            this.closeModal(); 
-            this.saveData(); 
+            if (!this.itinerary[dayIdx]) { this.itinerary[dayIdx] = []; }
+            if(this.editingIndex !== null) { this.itinerary[dayIdx][this.editingIndex] = {...this.newItem}; } 
+            else { this.itinerary[dayIdx].push({...this.newItem}); } 
+            this.closeModal(); this.saveData(); 
         },
-
         handleImageUpload(e) { const file = e.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = (event) => { this.tempImageSrc = event.target.result; this.isCropping = true; nextTick(() => { this.startCropper(); }); }; reader.readAsDataURL(file); e.target.value = ''; },
         startCropper() { if (this.cropper) { this.cropper.destroy(); } const image = this.$refs.cropImg; this.cropper = new Cropper(image, { aspectRatio: 16 / 9, viewMode: 1, dragMode: 'move', autoCropArea: 1, background: false }); },
         confirmCrop() { if (!this.cropper) return; const canvas = this.cropper.getCroppedCanvas({ maxWidth: 800 }); this.newItem.image = canvas.toDataURL('image/jpeg', 0.7); this.cancelCrop(); },
         cancelCrop() { this.isCropping = false; this.tempImageSrc = ''; if (this.cropper) { this.cropper.destroy(); this.cropper = null; } },
         async fetchWeather() { try { const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=22.2855&longitude=114.1577&daily=weathercode,temperature_2m_max&timezone=Asia%2FHong_Kong'); const data = await res.json(); const iconMap = code => code <= 1 ? 'fas fa-sun' : code <= 3 ? 'fas fa-cloud-sun' : 'fas fa-cloud'; for(let i=0; i<3; i++) { this.days[i].temp = Math.round(data.daily.temperature_2m_max[i]); this.days[i].icon = iconMap(data.daily.weathercode[i]); } } catch (e) {} },
-        
-        // 修正後的同步邏輯：確保陣列始終有 3 天
         initSync() { 
             db.ref('trip_data').on('value', (snapshot) => { 
                 const data = snapshot.val(); 
                 if (data) { 
                     let fetchedItinerary = data.itinerary || [];
-                    // 如果讀取到的天數少於 3 天，自動補齊
-                    while(fetchedItinerary.length < 3) {
-                        fetchedItinerary.push([]);
-                    }
+                    while(fetchedItinerary.length < 3) { fetchedItinerary.push([]); }
                     this.itinerary = fetchedItinerary;
                     this.packingList = data.packingList || []; 
                     this.shoppingList = data.shoppingList || []; 
                     this.expenseList = data.expenseList || []; 
-                } else {
-                    this.itinerary = [[], [], []];
-                }
+                } else { this.itinerary = [[], [], []]; }
                 this.syncStatus = true; 
             }); 
         },
-
         saveData() { db.ref('trip_data').set({ itinerary: this.itinerary, packingList: this.packingList, shoppingList: this.shoppingList, expenseList: this.expenseList }); },
         deleteItem(idx) { if(confirm('確定刪除嗎？')) { this.itinerary[this.currentDay-1].splice(idx, 1); this.saveData(); } },
         moveItem(idx, dir) { let list = this.itinerary[this.currentDay-1]; if ((dir === -1 && idx > 0) || (dir === 1 && idx < list.length - 1)) { const item = list.splice(idx, 1)[0]; list.splice(idx + dir, 0, item); this.saveData(); } },
