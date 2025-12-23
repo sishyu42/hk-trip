@@ -20,7 +20,7 @@
         .header-bg { background-image: linear-gradient(to bottom, rgba(166, 27, 27,0.4), rgba(166, 27, 27, 0.7)), url('./images/bg.jpeg'); background-size: cover; background-position: center; border-bottom: 3px solid var(--hk-gold); }
         .brand-text {
             font-family: 'Cormorant Garamond', serif;
-            font-size: 4rem;
+            font-size: 3.5rem;
             font-weight: 900;
             letter-spacing: 1px;
             color: #FFFFFF; 
@@ -33,18 +33,11 @@
         .snowflake { position: absolute; color: white; opacity: 0.5; font-size: 10px; animation: fall linear infinite; pointer-events: none; }
         @keyframes fall { to { transform: translateY(100vh) rotate(360deg); } }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .ticket-stub { background: #FFF9E6; border: 3px solid var(--hk-gold); border-style: dashed; border-radius: 12px; }
         .timeline-path { position: absolute; left: 58px; top: 0; bottom: 0; width: 2px; background: repeating-linear-gradient(to bottom, #D4AF37 0, #D4AF37 5px, transparent 5px, transparent 10px); z-index: 1; }
         .modal-enter-active, .modal-leave-active { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
         .modal-enter-from, .modal-leave-to { opacity: 0; transform: translateY(20px); }
-        /* Cropper 自定義樣式 */
-        .cropper-view-box, .cropper-face {
-            border-radius: 1.5rem; /* 讓裁剪框也是圓角 */
-        }
-        /* 確保裁剪圖片在容器內最大化顯示 */
-        .crop-container img {
-            display: block;
-            max-width: 100%;
-        }
+        .crop-container img { display: block; max-width: 100%; }
     </style>
 </head>
 <body class="flex flex-col">
@@ -55,7 +48,9 @@
         <div class="w-1.5 h-1.5 rounded-full" :class="syncStatus ? 'bg-green-400' : 'bg-red-400 animate-pulse'"></div>
         <span class="text-[8px] text-white font-black uppercase tracking-widest">{{ syncStatus ? 'Synced' : 'Offline' }}</span>
     </div>
+
     <div v-for="n in 12" :key="n" class="snowflake" :style="{left: Math.random()*100+'%', animationDuration: (Math.random()*10+5)+'s', animationDelay: Math.random()*5+'s', top: '-20px'}">❄</div>
+
     <header class="header-bg text-white px-6 pt-12 pb-5 z-30 shadow-lg relative">
         <h1 class="brand-text">HONG KONG</h1>
         <div class="flex items-center space-x-2 opacity-80 mt-1">
@@ -63,25 +58,62 @@
             <p class="text-[9px] font-black uppercase tracking-widest">January , 2026</p>
         </div>
     </header>
+
     <main class="flex-1 overflow-y-auto hide-scrollbar p-4 relative z-10 pb-24">
+        
         <div v-if="currentTab === 'itinerary'">
             <div class="flex mb-5 items-center justify-between">
                 <div class="flex space-x-1">
-                    <button v-for="d in days" @click="currentDay = d.id" :class="currentDay === d.id ? 'xmas-red text-white shadow-md' : 'bg-white text-gray-400 border'" class="py-2 px-3 rounded-lg text-[10px] font-black transition-all">DAY {{ d.id }}</button>
+                    <button v-for="d in days" @click="currentDay = d.id" 
+                        :class="currentDay === d.id ? 'xmas-red text-white shadow-md' : 'bg-white text-gray-400 border'"
+                        class="py-2 px-3 rounded-lg text-[10px] font-black transition-all">DAY {{ d.id }}</button>
                 </div>
-                <div class="flex items-center space-x-2 bg-white px-3 py-1.5 rounded-full border border-hk-gold/30 shadow-sm"><i :class="days[currentDay-1].icon" class="text-hk-gold text-sm"></i><span class="text-xs font-black text-xmas-green">{{ days[currentDay-1].temp }}°C</span></div>
+                <div class="flex items-center space-x-2 bg-white px-3 py-1.5 rounded-full border border-hk-gold/30 shadow-sm">
+                    <i :class="days[currentDay-1].icon" class="text-hk-gold text-sm"></i>
+                    <span class="text-xs font-black text-xmas-green">{{ days[currentDay-1].temp }}°C</span>
+                </div>
             </div>
+
+            <div v-if="currentDay === 1 || currentDay === 3" class="ticket-stub p-5 mb-8 mx-1">
+                <div class="flex justify-between items-center border-b-2 border-dashed border-hk-gold/30 pb-2 mb-4 text-[10px] font-black text-xmas-red italic">
+                    <span>FLIGHT PASS</span>
+                    <span class="text-hk-gold uppercase">{{ currentDay === 1 ? 'Go to HK' : 'Return Home' }}</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <div class="text-center">
+                        <p class="text-4xl font-black text-xmas-red leading-none">{{ currentDay === 1 ? 'KHH' : 'HKG' }}</p>
+                        <p class="text-sm font-black text-xmas-green mt-2">{{ currentDay === 1 ? '07:50' : '20:45' }}</p>
+                    </div>
+                    <div class="flex-1 border-t-2 border-hk-gold/40 border-dotted relative mx-4"><i class="fas fa-sleigh text-hk-gold absolute -top-3 left-1/2 -translate-x-1/2 text-2xl"></i></div>
+                    <div class="text-center">
+                        <p class="text-4xl font-black text-xmas-red leading-none">{{ currentDay === 1 ? 'HKG' : 'KHH' }}</p>
+                        <p class="text-sm font-black text-xmas-green mt-2">{{ currentDay === 1 ? '09:30' : '22:15' }}</p>
+                    </div>
+                </div>
+            </div>
+
             <div class="relative pl-16">
                 <div v-if="currentDayItems.length > 0" class="timeline-path"></div>
                 <div v-for="(item, index) in currentDayItems" :key="index">
-                    <div v-if="index > 0" class="relative -left-10 mb-6 flex items-center z-20"><div class="bg-white/80 backdrop-blur-sm border border-hk-gold/40 px-3 py-1 rounded-full shadow-sm flex items-center space-x-2"><i class="fas fa-route text-hk-gold text-[10px]"></i><input v-model="item.gapInfo" @change="saveData" placeholder="輸入交通時間" class="bg-transparent border-none outline-none text-[10px] font-bold text-hk-gold w-32"></div></div>
+                    <div v-if="index > 0" class="relative -left-10 mb-6 flex items-center z-20">
+                        <div class="bg-white/80 backdrop-blur-sm border border-hk-gold/40 px-3 py-1 rounded-full shadow-sm flex items-center space-x-2">
+                            <i class="fas fa-route text-hk-gold text-[10px]"></i>
+                            <input v-model="item.gapInfo" @change="saveData" placeholder="輸入交通時間" class="bg-transparent border-none outline-none text-[10px] font-bold text-hk-gold w-32">
+                        </div>
+                    </div>
+
                     <div class="mb-10 relative">
                         <div class="absolute -left-16 top-1 w-12 text-right text-[11px] font-black text-xmas-green">{{ item.time }}</div>
                         <div class="absolute -left-[11px] top-1.5 w-3 h-3 rounded-full bg-xmas-red z-10 border-2 border-white"></div>
                         <div class="bg-white rounded-xl overflow-hidden shadow-md border-b-4 border-xmas-green p-3">
                             <img v-if="item.image" :src="item.image" class="w-full h-40 object-cover rounded-lg mb-3">
                             <div class="flex flex-col">
-                                <div class="flex justify-between items-start mb-2"><div class="flex-1"><span v-if="item.tag" class="text-[8px] bg-hk-gold/10 text-hk-gold px-2 py-0.5 rounded-full font-black uppercase mb-1 inline-block">{{ item.tag }}</span><h3 class="font-black text-sm text-xmas-green leading-tight">{{ item.location }}</h3></div></div>
+                                <div class="flex justify-between items-start mb-2">
+                                    <div class="flex-1">
+                                        <span v-if="item.tag" class="text-[8px] bg-hk-gold/10 text-hk-gold px-2 py-0.5 rounded-full font-black uppercase mb-1 inline-block">{{ item.tag }}</span>
+                                        <h3 class="font-black text-sm text-xmas-green leading-tight">{{ item.location }}</h3>
+                                    </div>
+                                </div>
                                 <p v-if="item.note" class="text-[10px] text-gray-400 mb-4 italic border-l-2 border-hk-gold pl-2">{{ item.note }}</p>
                                 <div class="flex justify-between items-center mt-1 pt-2 border-t border-gray-50">
                                     <div class="flex space-x-1">
@@ -98,6 +130,7 @@
                 </div>
             </div>
         </div>
+
         <div v-if="currentTab === 'list'" class="space-y-6">
             <div class="bg-white rounded-3xl shadow-xl overflow-hidden border-t-4 border-xmas-red">
                 <div class="xmas-red p-4 flex justify-between items-center text-white"><h2 class="font-black italic tracking-widest text-sm uppercase"><i class="fas fa-suitcase-rolling mr-2"></i>Packing List</h2></div>
@@ -106,7 +139,15 @@
                     <div class="flex mt-4 bg-gray-50 rounded-xl p-1"><input v-model="newItemName" placeholder="新增行李..." class="flex-1 bg-transparent p-3 text-xs outline-none font-bold"><button @click="addItem('packing')" class="xmas-red text-white px-5 rounded-lg font-black text-xs">+</button></div>
                 </div>
             </div>
+            <div class="bg-white rounded-3xl shadow-xl overflow-hidden border-t-4 border-xmas-green">
+                <div class="xmas-green p-4 text-white"><h2 class="font-black italic tracking-widest text-sm uppercase"><i class="fas fa-gift mr-2"></i>Shopping List</h2></div>
+                <div class="p-4 space-y-2">
+                    <div v-for="(item, idx) in shoppingList" :key="idx" @click="item.done = !item.done; saveData()" class="flex items-center justify-between p-3 rounded-xl border border-hk-gold/10 bg-white shadow-sm" :class="item.done ? 'opacity-50' : ''"><div class="flex items-center space-x-3"><i :class="item.done ? 'fa-check-square text-hk-gold' : 'fa-square text-gray-200'" class="far"></i><span class="text-xs font-bold">{{ item.text }}</span></div><button @click.stop="deleteListItem('shopping', idx)" class="text-gray-200 hover:text-red-400"><i class="fas fa-trash-alt"></i></button></div>
+                    <div class="flex mt-4 bg-gray-50 rounded-xl p-1"><input v-model="newShopItemName" placeholder="想買什麼呢？" class="flex-1 bg-transparent p-3 text-xs outline-none font-bold"><button @click="addItem('shopping')" class="xmas-green text-white px-5 rounded-lg font-black text-xs">+</button></div>
+                </div>
+            </div>
         </div>
+
         <div v-if="currentTab === 'expense'" class="flex flex-col h-full space-y-4">
             <div class="bg-white p-5 rounded-2xl shadow-lg border-2 border-hk-gold/30 text-center relative mx-1">
                 <div class="text-[9px] font-black text-hk-gold mb-1 uppercase tracking-widest"><i class="fas fa-sync-alt fa-spin mr-1" v-if="!rateLoaded"></i>Live Rate: 1 HKD ≈ {{ exchangeRate }} TWD</div>
@@ -136,19 +177,13 @@
                     </div>
                     
                     <div class="group relative aspect-video bg-gray-50 rounded-3xl border-2 border-dashed border-gray-200 flex items-center justify-center overflow-hidden transition-all hover:border-hk-gold">
-                        
                         <div v-if="isCropping" class="w-full h-full relative crop-container bg-black z-20">
                             <img ref="cropImg" :src="tempImageSrc" class="max-w-full">
                             <div class="absolute bottom-4 right-4 flex space-x-2 z-30">
-                                <button @click.stop="cancelCrop" class="bg-white/20 backdrop-blur-md text-white w-10 h-10 rounded-full flex items-center justify-center border border-white/50 active:scale-90">
-                                    <i class="fas fa-times"></i>
-                                </button>
-                                <button @click.stop="confirmCrop" class="bg-xmas-red text-white w-10 h-10 rounded-full flex items-center justify-center shadow-lg border-2 border-white active:scale-90">
-                                    <i class="fas fa-check"></i>
-                                </button>
+                                <button @click.stop="cancelCrop" class="bg-white/20 backdrop-blur-md text-white w-10 h-10 rounded-full flex items-center justify-center border border-white/50"><i class="fas fa-times"></i></button>
+                                <button @click.stop="confirmCrop" class="bg-xmas-red text-white w-10 h-10 rounded-full flex items-center justify-center shadow-lg border-2 border-white"><i class="fas fa-check"></i></button>
                             </div>
                         </div>
-
                         <template v-else>
                             <img v-if="newItem.image" :src="newItem.image" class="w-full h-full object-cover z-10">
                             <div v-else class="text-center text-gray-300 z-0">
@@ -187,7 +222,7 @@ const firebaseConfig = { apiKey: "AIzaSyCgpe5pVDiX_e7kvgTINptcmqYXtX7V854", auth
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-const { createApp, nextTick } = Vue; // 引入 nextTick
+const { createApp, nextTick } = Vue;
 createApp({
     data() {
         return {
@@ -197,10 +232,7 @@ createApp({
             itinerary: [[], [], []], 
             newItem: {time: '12:00', location: '', image: '', mapUrl: '', tag: '📸 景點', note: '', gapInfo: ''},
             packingList: [], shoppingList: [], expenseList: [], newItemName: '', newShopItemName: '', newEx:{name:'', amount:null},
-            // 3. 新增：裁剪相關狀態
-            isCropping: false,
-            tempImageSrc: '',
-            cropper: null
+            isCropping: false, tempImageSrc: '', cropper: null
         }
     },
     computed: {
@@ -208,75 +240,60 @@ createApp({
         totalExpense() { return this.expenseList.reduce((sum, i)=> sum + (parseFloat(i.amount)||0), 0); }
     },
     methods: {
-        async fetchExchangeRate() { try { const res = await fetch('https://api.frankfurter.app/latest?from=HKD&to=TWD'); const data = await res.json(); if (data && data.rates && data.rates.TWD) { this.exchangeRate = data.rates.TWD.toFixed(2); this.rateLoaded = true; } } catch (e) { console.error("匯率抓取失敗"); } },
+        async fetchExchangeRate() { try { const res = await fetch('https://api.frankfurter.app/latest?from=HKD&to=TWD'); const data = await res.json(); if (data && data.rates && data.rates.TWD) { this.exchangeRate = data.rates.TWD.toFixed(2); this.rateLoaded = true; } } catch (e) {} },
         openAddModal() { this.editingIndex = null; this.newItem = {time: '12:00', location: '', image: '', mapUrl: '', tag: '📸 景點', note: '', gapInfo: ''}; this.showModal = true; },
-        editItem(idx) { this.editingIndex = idx; const item = this.itinerary[this.currentDay-1][idx]; this.newItem = { ...item }; this.showModal = true; },
+        editItem(idx) { this.editingIndex = idx; const item = this.currentDayItems[idx]; this.newItem = { ...item }; this.showModal = true; },
+        closeModal() { this.showModal = false; this.editingIndex = null; this.cancelCrop(); },
         
-        // 4. 修改：關閉 Modal 時清理 Cropper
-        closeModal() {
-            this.showModal = false;
-            this.editingIndex = null;
-            this.cancelCrop(); // 確保清理裁剪狀態
-        },
-        addItineraryItem() { if(!this.newItem.location) return; if(this.editingIndex !== null) { this.itinerary[this.currentDay-1][this.editingIndex] = {...this.newItem}; } else { this.itinerary[this.currentDay-1].push({...this.newItem}); } this.closeModal(); this.saveData(); },
-        
-        // 5. 重寫：圖片上傳處理 (改為啟動裁剪)
-        handleImageUpload(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                this.tempImageSrc = event.target.result; // 讀取原圖
-                this.isCropping = true; // 進入裁剪模式
-                // 等待 DOM 更新後初始化 Cropper
-                nextTick(() => {
-                    this.startCropper();
-                });
-            };
-            reader.readAsDataURL(file);
-            e.target.value = ''; // 清空 input 以便重複選擇同一張圖
-        },
-        
-        // 6. 新增：啟動 Cropper
-        startCropper() {
-            if (this.cropper) { this.cropper.destroy(); }
-            const image = this.$refs.cropImg;
-            this.cropper = new Cropper(image, {
-                aspectRatio: 16 / 9, // 設定裁剪比例配合容器
-                viewMode: 1, // 限制裁剪框不超出畫布
-                dragMode: 'move',
-                autoCropArea: 1,
-                background: false,
-            });
-        },
-
-        // 7. 新增：確認裁剪
-        confirmCrop() {
-            if (!this.cropper) return;
-            // 取得裁剪後的 Canvas，並限制最大寬度以優化效能
-            const canvas = this.cropper.getCroppedCanvas({ maxWidth: 800 });
-            // 轉為 base64 並儲存到 newItem
-            this.newItem.image = canvas.toDataURL('image/jpeg', 0.7);
-            this.cancelCrop(); // 退出裁剪模式
-        },
-
-        // 8. 新增：取消裁剪
-        cancelCrop() {
-            this.isCropping = false;
-            this.tempImageSrc = '';
-            if (this.cropper) {
-                this.cropper.destroy();
-                this.cropper = null;
+        // 修正後的 addItineraryItem：確保目標陣列存在
+        addItineraryItem() { 
+            if(!this.newItem.location) return; 
+            const dayIdx = this.currentDay - 1;
+            // 如果該天還沒被初始化，手動補上空陣列
+            if (!this.itinerary[dayIdx]) {
+                this.itinerary[dayIdx] = [];
             }
+            if(this.editingIndex !== null) { 
+                this.itinerary[dayIdx][this.editingIndex] = {...this.newItem}; 
+            } else { 
+                this.itinerary[dayIdx].push({...this.newItem}); 
+            } 
+            this.closeModal(); 
+            this.saveData(); 
         },
 
+        handleImageUpload(e) { const file = e.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = (event) => { this.tempImageSrc = event.target.result; this.isCropping = true; nextTick(() => { this.startCropper(); }); }; reader.readAsDataURL(file); e.target.value = ''; },
+        startCropper() { if (this.cropper) { this.cropper.destroy(); } const image = this.$refs.cropImg; this.cropper = new Cropper(image, { aspectRatio: 16 / 9, viewMode: 1, dragMode: 'move', autoCropArea: 1, background: false }); },
+        confirmCrop() { if (!this.cropper) return; const canvas = this.cropper.getCroppedCanvas({ maxWidth: 800 }); this.newItem.image = canvas.toDataURL('image/jpeg', 0.7); this.cancelCrop(); },
+        cancelCrop() { this.isCropping = false; this.tempImageSrc = ''; if (this.cropper) { this.cropper.destroy(); this.cropper = null; } },
         async fetchWeather() { try { const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=22.2855&longitude=114.1577&daily=weathercode,temperature_2m_max&timezone=Asia%2FHong_Kong'); const data = await res.json(); const iconMap = code => code <= 1 ? 'fas fa-sun' : code <= 3 ? 'fas fa-cloud-sun' : 'fas fa-cloud'; for(let i=0; i<3; i++) { this.days[i].temp = Math.round(data.daily.temperature_2m_max[i]); this.days[i].icon = iconMap(data.daily.weathercode[i]); } } catch (e) {} },
-        initSync() { db.ref('trip_data').on('value', (snapshot) => { const data = snapshot.val(); if (data) { this.itinerary = data.itinerary || [[], [], []]; this.packingList = data.packingList || []; this.shoppingList = data.shoppingList || []; this.expenseList = data.expenseList || []; } this.syncStatus = true; }); },
+        
+        // 修正後的同步邏輯：確保陣列始終有 3 天
+        initSync() { 
+            db.ref('trip_data').on('value', (snapshot) => { 
+                const data = snapshot.val(); 
+                if (data) { 
+                    let fetchedItinerary = data.itinerary || [];
+                    // 如果讀取到的天數少於 3 天，自動補齊
+                    while(fetchedItinerary.length < 3) {
+                        fetchedItinerary.push([]);
+                    }
+                    this.itinerary = fetchedItinerary;
+                    this.packingList = data.packingList || []; 
+                    this.shoppingList = data.shoppingList || []; 
+                    this.expenseList = data.expenseList || []; 
+                } else {
+                    this.itinerary = [[], [], []];
+                }
+                this.syncStatus = true; 
+            }); 
+        },
+
         saveData() { db.ref('trip_data').set({ itinerary: this.itinerary, packingList: this.packingList, shoppingList: this.shoppingList, expenseList: this.expenseList }); },
         deleteItem(idx) { if(confirm('確定刪除嗎？')) { this.itinerary[this.currentDay-1].splice(idx, 1); this.saveData(); } },
         moveItem(idx, dir) { let list = this.itinerary[this.currentDay-1]; if ((dir === -1 && idx > 0) || (dir === 1 && idx < list.length - 1)) { const item = list.splice(idx, 1)[0]; list.splice(idx + dir, 0, item); this.saveData(); } },
-        addItem(type) { if(type === 'packing' && this.newItemName) { this.packingList.push({text: this.newItemName, done: false}); this.newItemName = ''; } this.saveData(); },
-        deleteListItem(type, idx) { if(type === 'packing') this.packingList.splice(idx, 1); this.saveData(); },
+        addItem(type) { if(type === 'packing' && this.newItemName) { this.packingList.push({text: this.newItemName, done: false}); this.newItemName = ''; } else if(type === 'shopping' && this.newShopItemName) { this.shoppingList.push({text: this.newShopItemName, done: false}); this.newShopItemName = ''; } this.saveData(); },
+        deleteListItem(type, idx) { if(type === 'packing') this.packingList.splice(idx, 1); else if(type === 'shopping') this.shoppingList.splice(idx, 1); this.saveData(); },
         addExpense() { if (this.newEx.name && this.newEx.amount) { this.expenseList.push({...this.newEx}); this.newEx={name:'', amount:null}; this.saveData(); } },
         deleteExpense(i) { this.expenseList.splice(i, 1); this.saveData(); }
     },
